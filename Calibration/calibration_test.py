@@ -1,5 +1,6 @@
 import sys
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/Motor')
+sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/BMX055')
 import numpy as np
 import math
 import matplotlib.pyplot as plt
@@ -41,6 +42,7 @@ if __name__ == '__main__':
 			dir = math.atan2((bmx055data[6]-cal_data[0])/cal_data[2], (bmx055data[7]-cal_data[1])/cal_data[3])*180/math.pi
 			print("\t" + str(dir))
 	except KeyboardInterrupt:
+		print("KeyboardInterrupt")
 		Motor.motor_stop()
 	except Exception as e:
 		Motor.motor_stop()
