@@ -1,9 +1,29 @@
+import sys
+sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/Motor')
+sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/BMX055')
 import numpy as np
+import matplotlib.pyplot as plt
+import Motor
+import BMX055
+from scipy.stats import norm
 from scipy import odr
 from scipy import optimize
 from matplotlib.patches import Ellipse
-import matplotlib.pyplot as plt
-from scipy.stats import norm
+
+def readCalData(filepath):
+    count = 0
+    while count <= 200:
+        Motor.motor(30, -30)
+        bmx055data = BMX055.bmx055_read()
+        with open(filepath, 'a')   as f:
+            for i in range(6, 8):
+                print(str(bmx055data[i]) + "\t", end="")
+                f.write(str(bmx055data[i]) + "\t")
+            print()
+            f.write("\n")
+        count = count + 1
+
+    Motor.motor(0, 0, 1)
 
 def ellipse(B, x):
     return ((x[0]/B[0])**2+(x[1]/B[1])**2-1.)
@@ -64,16 +84,22 @@ def calibration(path):
 
     cal_data = [x_ave, y_ave, 100.*myoutput.beta[1], 100.*myoutput.beta[0]]
 
-    ax = plt.subplot(111, aspect='equal')
     plt.scatter(xx_csv, yy_csv, c="blue")
     plt.scatter(x_csv, y_csv, c="red")
     plt.grid()
     plt.show()
     return cal_data
 
-
 if __name__ == '__main__':
-    file = 'cal_test_1.txt'
-    cal_data = calibration(file)
-    for i in range(4):
-        print(cal_data[i])
+    try:
+        file = 'cal_test_1.txt'
+        #readCalData(file)
+        cal_data = calibration(file)
+        for i in range(4):
+            print(cal_data[i])
+    except KeyboardInterrupt:
+        Motor.motor_stop()
+        print("Keyboard Interrupt")
+    except Exception as e:
+        Motor.motor_stop()
+        print(e.message)
