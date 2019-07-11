@@ -3,8 +3,8 @@ sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/Motor')
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/BMX055')
 import numpy as np
 import matplotlib.pyplot as plt
-import Motor
-import BMX055
+#import Motor
+#import BMX055
 from scipy.stats import norm
 from scipy import odr
 from scipy import optimize
@@ -28,7 +28,7 @@ def readCalData(filepath):
 def ellipse(B, x):
     return ((x[0]/B[0])**2+(x[1]/B[1])**2-1.)
 
-def calibration(path):
+def Calibration(path):
     with open(path, "r") as f:
         lines = f.readlines()
         x_csv = []
@@ -87,6 +87,7 @@ def calibration(path):
     plt.scatter(xx_csv, yy_csv, c="blue")
     plt.scatter(x_csv, y_csv, c="red")
     plt.grid()
+    plt.axes().set_aspect('equal')
     plt.show()
     return cal_data
 
@@ -94,7 +95,7 @@ if __name__ == '__main__':
     try:
         file = 'cal_test_1.txt'
         #readCalData(file)
-        cal_data = calibration(file)
+        cal_data = Calibration(file)
         for i in range(4):
             print(cal_data[i])
     except KeyboardInterrupt:

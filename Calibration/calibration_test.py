@@ -30,7 +30,7 @@ if __name__ == '__main__':
 			count = count + 1
 
 		Motor.motor(0, 0, 1)
-		cal_data = Calibration.calibration(file)
+		cal_data = Calibration.Calibration(file)
 		for i in range(4):
 			print(cal_data[i])
 
