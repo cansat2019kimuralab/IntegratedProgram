@@ -42,9 +42,6 @@ def fileName(f):
 	while(os.path.exists(f+str(i) + ".txt")):
 		i = i + 1
 	f = f + str(i) + ".txt"
-	while(os.path.exists(f+str(i) + ".txt")):
-		i = i + 1
-	f = f + str(i) + ".txt"
 	return f
 
 if __name__ == "__main__":
