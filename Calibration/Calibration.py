@@ -24,7 +24,6 @@ def readCalData(filepath):
 			print()
 			f.write("\n")
 		count = count + 1
-
 	Motor.motor(0, 0, 1)
 
 def ellipse(B, x):
@@ -93,21 +92,30 @@ def Calibration(path):
 	#plt.show()
 	return cal_data
 
+def readDir(calData):
+	bmx055data = BMX055.bmx055_read()
+	return math.atan2((bmx055data[6]-calData[0])/calData[2], (bmx055data[7]-calData[1])/calData[3])*180/math.pi
+
+def fileName(f):
+	i = 0
+	while(os.path.exists(f+str(i) + ".txt")):
+		i = i + 1
+	f = f + str(i) + ".txt"
+	return f
+
+
 if __name__ == '__main__':
 	try:
 		BMX055.bmx055_setup()
 		time.sleep(1)
-		file = 'cal_test_1.txt'
+		file = fileName("calData")
 		readCalData(file)
 		cal_data = Calibration(file)
 		for i in range(4):
 			print(cal_data[i])
 		while 1:
-			bmx055data = BMX055.bmx055_read()
-			dir = math.atan2(bmx055data[6], bmx055data[7])*180/math.pi
-			print(dir, end="")
-			dir = math.atan2((bmx055data[6]-cal_data[0])/cal_data[2], (bmx055data[7]-cal_data[1])/cal_data[3])*180/math.pi
-			print("\t" + str(dir) + "\t", end="")
+			dir = readDir(cal_data)
+			print(str(dir) + "\t", end="")
 			mP = int(dir * 1.0)
 			if(mP > 30):
 				mP = 30
