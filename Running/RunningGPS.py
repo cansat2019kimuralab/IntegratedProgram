@@ -39,14 +39,11 @@ def close():
 
 def fileName(f):
 	i = 0
-
 	while(os.path.exists(f+str(i) + ".txt")):
 		i = i + 1
-
 	f = f + str(i) + ".txt"
 	while(os.path.exists(f+str(i) + ".txt")):
 		i = i + 1
-
 	f = f + str(i) + ".txt"
 	return f
 
