@@ -3,8 +3,8 @@ sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/Motor')
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/BMX055')
 import numpy as np
 import matplotlib.pyplot as plt
-#import Motor
-#import BMX055
+import Motor
+import BMX055
 from scipy.stats import norm
 from scipy import odr
 from scipy import optimize
@@ -94,7 +94,7 @@ def Calibration(path):
 if __name__ == '__main__':
     try:
         file = 'cal_test_1.txt'
-        #readCalData(file)
+        readCalData(file)
         cal_data = Calibration(file)
         for i in range(4):
             print(cal_data[i])
