@@ -1,12 +1,16 @@
 # Calibration
+[3è»¸ç£æ°—ã‚»ãƒ³ã‚µãƒ¼LIS3MDã®æ¤œè¨](https://research.itplants.com/?p=1787)  
+[Scipy.odr ã‚’ä½¿ã£ãŸé™°é–¢æ•°ãƒ•ã‚£ãƒƒãƒ†ã‚£ãƒ³ã‚°](http://pota.hatenablog.jp/entry/2014/10/31/033326)  
+[çƒé¢ãƒ•ã‚£ãƒƒãƒ†ã‚£ãƒ³ã‚°ã®å°å‡ºã¨å®Ÿè£…](https://github.com/J-ROCKET-BOY/SS-Fitting/blob/master/SS_fitting.py#L83)
+
 ## Calibration.py
-ƒ‰ƒCƒuƒ‰ƒŠ  
-- Calibration(path) : ƒtƒBƒbƒeƒBƒ“ƒO‚ÅƒLƒƒƒŠƒuƒŒ[ƒVƒ‡ƒ“‚ğs‚¤  
-	ˆø”@F ƒtƒ@ƒCƒ‹ƒpƒX  
-	–ß‚è’lF ‘È‰~ ¨ ‰~•ÏŠ·ƒxƒNƒgƒ‹i[x_ave, y_ave, x_axis, y_axis])  
-- readCalData(path) : BMX055‚©‚çƒf[ƒ^‚ğæ‚è•Û‘¶‚·‚é  
-	ˆø”@F ƒtƒ@ƒCƒ‹ƒpƒX  
-	–ß‚è’lF ‚È‚µ  
+ãƒ©ã‚¤ãƒ–ãƒ©ãƒª  
+- Calibration(path) : ãƒ•ã‚£ãƒƒãƒ†ã‚£ãƒ³ã‚°ã§ã‚­ãƒ£ãƒªãƒ–ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ã‚’è¡Œã†  
+	å¼•æ•°ã€€ï¼š ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹  
+	æˆ»ã‚Šå€¤ï¼š æ¥•å†† â†’ å††å¤‰æ›ãƒ™ã‚¯ãƒˆãƒ«ï¼ˆ[x_ave, y_ave, x_axis, y_axis])  
+- readCalData(path) : BMX055ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’å–ã‚Šä¿å­˜ã™ã‚‹  
+	å¼•æ•°ã€€ï¼š ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹  
+	æˆ»ã‚Šå€¤ï¼š ãªã—  
 
 ## calibration_test.py
-CalibrationŠm”F—p  
+Calibrationç¢ºèªç”¨  
