@@ -3,6 +3,7 @@ sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/BMX055')
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/GPS')
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/Motor')
 sys.path.append('/home/pi/git/kimuralab/IntegratedProgram/Calibration')
+import math
 import time
 import pigpio
 import serial
@@ -16,7 +17,7 @@ fileCal = "" 						#file path for Calibration
 ellipseScale = [0.0, 0.0, 0.0, 0.0] #Convert coefficient Ellipse to Circle
 disGoal = 0.0						#Distance from Goal [m]
 angle = 0.0							#Angle toward Goal [deg]
-gLat, gLon = 35.918709, 139.911056	#Coordinates of That time
+gLat, gLon = 35.918181, 139.907992	#Coordinates of That time
 nLat, nLon = 0.0, 0.0		  		#Coordinates of That time
 
 pi = pigpio.pi()	#object to set pigpio
@@ -59,7 +60,9 @@ if __name__ == "__main__":
 			if(gpsData[1] != 0.0 and gpsData[2] != 0.0):
 				nLat = gpsData[1]
 				nLon = gpsData[2]
-				disGoal, angle = GPS.Cal_RhoAng(nLon, nLat, gLon, gLat)
+				disGoal, angle = GPS.Cal_RhoAng(nLat,nLon,  gLat, gLon)
+				with open("log.txt", "a") as f:
+					f.write(str(nLat) + "\t" + str(nLon) + "\t" + str(disGoal) + "\t" + str(angle) + "\n")
 				print(disGoal, angle)
 			else:
 				print("StatusV")
