@@ -16,9 +16,12 @@ import Motor
 fileCal = "" 						#file path for Calibration
 ellipseScale = [0.0, 0.0, 0.0, 0.0] #Convert coefficient Ellipse to Circle
 disGoal = 0.0						#Distance from Goal [m]
-angle = 0.0							#Angle toward Goal [deg]
+angGoal = 0.0						#Angle toword Goal [deg]
+angOffset = 0.0						#Angle Offset towrd North [deg]
 gLat, gLon = 35.918181, 139.907992	#Coordinates of That time
 nLat, nLon = 0.0, 0.0		  		#Coordinates of That time
+nAng = 0.0							#Direction of That time [deg]	
+mP = 0								#Motor Power				
 
 pi = pigpio.pi()	#object to set pigpio
 
@@ -56,17 +59,24 @@ if __name__ == "__main__":
 		while 1:
 			gpsData = GPS.readGPS()
 			#bmx055Data = BMX055.bmx055_read()
+			#nAng = Calibration.readDir(ellipseScale) - angOffset
 			print(str(gpsData[1]) + "\t" + str(gpsData[2])+ "\t", end="")
 			if(gpsData[1] != 0.0 and gpsData[2] != 0.0):
 				nLat = gpsData[1]
 				nLon = gpsData[2]
-				disGoal, angle = GPS.Cal_RhoAng(nLat,nLon,  gLat, gLon)
+				disGoal, angGoal = GPS.Cal_RhoAng(nLat,nLon,  gLat, gLon)
 				with open("log.txt", "a") as f:
-					f.write(str(nLat) + "\t" + str(nLon) + "\t" + str(disGoal) + "\t" + str(angle) + "\n")
-				print(disGoal, angle)
-			else:
-				print("StatusV")
-			time.sleep(1)
+					f.write(str(nLat) + "\t" + str(nLon) + "\t" + str(disGoal) + "\t" + str(angGoal) + "\n")
+				print(disGoal, angGoal)
+
+			'''
+			mP = int((nAng - angGoal) * 1.0)
+			mP = 30 if mP > 30 else mP = mP
+			mP = -30 if mP < -30 else mP = mP
+			Motor.motor(mP, -mP, 0.001, 1)
+			print(nAng, angGoal, mP)
+			'''
+			time.sleep(0.001)
 		close()
 	except KeyboardInterrupt:
 		close()
