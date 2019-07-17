@@ -11,7 +11,6 @@ import pigpio
 import serial
 import binascii
 import BMX055
-import BME280
 import Capture
 import ParaDetection
 import IM920
@@ -53,34 +52,52 @@ def Cal_rho(lon_a,lat_a,lon_b,lat_b):
 
 def ParaAvoidance():
 	n = 0
-	GPS.openGPS()
-	GPS_init = GPS.readGPS()
-	#GPS.closeGPS()
-
-	GPS_now = GPS_init
-	dist = 0
 	try:
-		while dist <= 0.020 :
-			Capture.Capture(n)
-			img = cv2.imread('photo/photo' + str(n) + '.jpg')
-			flug = ParaDetection.ParaDetection(img)
-			if flug == 0:
-				Motor.motor(50,50,2)
-				Motor.motor_stop()
-				GPS_now = GPS.readGPS()
-				dist = Cal_rho(GPS_now[2], GPS_now[1], GPS_init[2], GPS_init[1])
+		GPS.openGPS()
+		time.sleep(3)
 
-			else:
-				Motor.motor(-30,30,1)
-				Motor.motor_stop()
-
-	except KeyboardInterrupt:
-		Motor.motor_stop()
+		print("START: GPS init")
+		GPS_init = GPS.readGPS()
+		GPS_now = GPS_init
+		print("SUCCESS: GPS init")
 	
-	GPS.closeGPS()
+		dist = 0
+		try:
+			while dist <= 0.020 :
+				print("START: capture")
+				Capture.Capture(n)
+				print("SUCCESS: capture")
+
+				print("START: Judge parachute exist")
+				img = cv2.imread('photo/photo' + str(n) + '.jpg')
+				flug = ParaDetection.ParaDetection(img)
+				if flug == 0:
+					Motor.motor(-50,50,2)
+					Motor.motor(0,0,2)
+					try:
+						print("START: GPS now")
+						GPS_now = GPS.readGPS()
+						print("SUCCESS: GPS now")
+					except:
+						print("FAIL: GPS now")
+						GPS.closeGPS()
+					dist = Cal_rho(GPS_now[2], GPS_now[1], GPS_init[2], GPS_init[1])
+					print("GPS_now is", GPS_now[2], GPS_now[1],"GPS_init is" , GPS_init[2], GPS_init[1])
+					print("Distance from prachute is", dist)
+	
+				else:
+					Motor.motor(30,30,1)
+					Motor.motor(0,0,2)
+
+		except KeyboardInterrupt:
+			Motor.motor_stop()
+
+	except:
+		GPS.closeGPS()
+		print("fail GPS init")
 
 if __name__ == '__main__':
-	print("ParaJudge start")
+	print("START: Judge covered by Parachute")
 	ParaJudge()
-	print("ParaAvoidance start")
+	print("START: Parachute avoidance")
 	ParaAvoidance()
