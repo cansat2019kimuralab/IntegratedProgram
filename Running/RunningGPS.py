@@ -10,16 +10,14 @@ import os
 import BMX055
 import Calibration
 import GPS
-import Cal_rho
 import Motor
 
-fileCal = "" #file path for Calibration
+fileCal = "" 						#file path for Calibration
 ellipseScale = [0.0, 0.0, 0.0, 0.0] #Convert coefficient Ellipse to Circle
-disGoal = 0.0	   #Distance from Goal [m]
-gLat = 35.918709	#Goal Latitude
-gLon = 139.911056   #Goal Longtitude
-nLat = 0.0		  #Latitude of That time
-nLon = 0.0		  #Longitude of That time
+disGoal = 0.0						#Distance from Goal [m]
+angle = 0.0							#Angle toward Goal [deg]
+gLat, gLon = 35.918709, 139.911056	#Coordinates of That time
+nLat, nLon = 0.0, 0.0		  		#Coordinates of That time
 
 pi = pigpio.pi()	#object to set pigpio
 
@@ -61,8 +59,10 @@ if __name__ == "__main__":
 			if(gpsData[1] != 0.0 and gpsData[2] != 0.0):
 				nLat = gpsData[1]
 				nLon = gpsData[2]
-				disGoal, angle = Cal_rho.Cal_rho(nLon, nLat, gLon, gLat)
-			print(disGoal)
+				disGoal, angle = GPS.Cal_RhoAng(nLon, nLat, gLon, gLat)
+				print(disGoal, angle)
+			else:
+				print("StatusV")
 			time.sleep(1)
 		close()
 	except KeyboardInterrupt:
