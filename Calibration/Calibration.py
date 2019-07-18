@@ -14,6 +14,8 @@ from scipy import odr
 from scipy import optimize
 #from matplotlib.patches import Ellipse
 
+dir_data = [0.0, 0.0, 0.0]
+
 def readCalData(filepath):
 	count = 0
 	while count <= 200:
@@ -103,13 +105,22 @@ if __name__ == '__main__':
 	try:
 		BMX055.bmx055_setup()
 		time.sleep(1)
-		file = Other.fileName("calData")
+		file = Other.fileName("calData", "txt")
 		readCalData(file)
 		cal_data = Calibration(file)
 		for i in range(4):
 			print(cal_data[i])
+		Other.saveLog(file, cal_data)
+
+		for i in range(3):
+			dir_data[i] = readDir(cal_data)
+			time.sleep(0.1)
+
 		while 1:
-			dir = readDir(cal_data)
+			dir_data[2] = dir_data[1]		#Thrid latest data
+			dir_data[1] = dir_data[0]		#Second latest data
+			dir_data[0] = readDir(cal_data)	#latest data
+			dir = np.median(dir_data)
 			print(str(dir) + "\t", end="")
 			mP = int(dir * 1.0)
 			if(mP > 30):
@@ -119,6 +130,7 @@ if __name__ == '__main__':
 			Motor.motor(mP, -mP, 0.001, 1)
 			print(mP)
 	except KeyboardInterrupt:
+		Motor.motor(0, 0, 1)
 		Motor.motor_stop()
 		print("Keyboard Interrupt")
 	except Exception as e:
