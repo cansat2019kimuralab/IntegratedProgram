@@ -33,68 +33,56 @@ def ParaJudge():
 		else:
 			break
 
-def Cal_rho(lon_a,lat_a,lon_b,lat_b):
-	ra=6378.140  # equatorial radius (km)
-	rb=6356.755  # polar radius (km)
-	F=(ra-rb)/ra # flattening of the earth
-	rad_lat_a=np.radians(lat_a)
-	rad_lon_a=np.radians(lon_a)
-	rad_lat_b=np.radians(lat_b)
-	rad_lon_b=np.radians(lon_b)
-	pa=np.arctan(rb/ra*np.tan(rad_lat_a))
-	pb=np.arctan(rb/ra*np.tan(rad_lat_b))
-	xx=np.arccos(np.sin(pa)*np.sin(pb)+np.cos(pa)*np.cos(pb)*np.cos(rad_lon_a-rad_lon_b))
-	c1=(np.sin(xx)-xx)*(np.sin(pa)+np.sin(pb))**2/np.cos(xx/2)**2
-	c2=(np.sin(xx)+xx)*(np.sin(pa)-np.sin(pb))**2/np.sin(xx/2)**2
-	dr=F/8*(c1-c2)
-	rho=ra*(xx+dr)
-	return rho
-
 def ParaAvoidance():
 	n = 0
-	try:
-		GPS.openGPS()
-		time.sleep(3)
+	dist = 0
+	print("START: GPS init")
+	GPS_init = GPS.readGPS()
 
-		print("START: GPS init")
+	while (GPS_init[2] == 0 and GPS_init[3] == 0):
+		print("FAIL: GPS init")
 		GPS_init = GPS.readGPS()
-		GPS_now = GPS_init
-		print("SUCCESS: GPS init")
-	
-		dist = 0
-		try:
-			while dist <= 0.020 :
-				print("START: capture")
-				Capture.Capture(n)
-				print("SUCCESS: capture")
+	print("SUCCESS: GPS init")
 
-				print("START: Judge parachute exist")
-				img = cv2.imread('photo/photo' + str(n) + '.jpg')
-				flug = ParaDetection.ParaDetection(img)
-				if flug == 0:
-					Motor.motor(-50,50,2)
-					Motor.motor(0,0,2)
-					try:
-						print("START: GPS now")
-						GPS_now = GPS.readGPS()
-						print("SUCCESS: GPS now")
-					except:
-						print("FAIL: GPS now")
-						GPS.closeGPS()
-					dist = Cal_rho(GPS_now[2], GPS_now[1], GPS_init[2], GPS_init[1])
-					print("GPS_now is", GPS_now[2], GPS_now[1],"GPS_init is" , GPS_init[2], GPS_init[1])
-					print("Distance from prachute is", dist)
-	
-				else:
-					Motor.motor(30,30,1)
-					Motor.motor(0,0,2)
+	try:
+		print("START: capture")
+		Capture.Capture(n)
+		print("SUCCESS: capture")
 
-		except KeyboardInterrupt:
-			Motor.motor_stop()
+		print("START: Judge parachute existance")
+		img = cv2.imread('photo/photo' + str(n) + '.jpg')
+		flug = ParaDetection.ParaDetection(img)
 
-	except:
-		GPS.closeGPS()
-		print("fail GPS init")
+		while flug == 1:
+			Motor.motor(30,30,1)
+			Motor.motor(0,0,2)
+			print("START: capture again")
+			Capture.Capture(n)
+			print("SUCCESS: capture")
+
+			print("START: Judge parachute existance")
+			img = cv2.imread('photo/photo' + str(n) + '.jpg')
+			flug = ParaDetection.ParaDetection(img)
+
+		while dist <= 20 :
+			Motor.motor(-50,50)
+			Motor.motor(0,0,2)
+
+			print("START: GPS now")
+			GPS_now = GPS.readGPS()
+			while (GPS_now[2] == 0 and GPS_now[3] == 0):
+				print("FAIL: GPS init")
+				GPS_now = GPS.readGPS()
+			print("SUCCESS: GPS now")
+			dist = GPS.Cal_rho(GPS_now[2], GPS_now[1], GPS_init[2], GPS_init[1])[0]
+			print("GPS_now is", GPS_now[2], GPS_now[1],"GPS_init is" , GPS_init[2], GPS_init[1])
+			print("Distance from prachute is", dist)
+
+	except KeyboardInterrupt:
+		print("Emergency!!!!!!!!")
+		Motor.motor_stop()
+
+
 
 if __name__ == '__main__':
 	print("START: Judge covered by Parachute")
