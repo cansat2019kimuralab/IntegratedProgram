@@ -1,12 +1,14 @@
 import sys
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/Motor')
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/BMX055')
+sys.path.append('/home/pi/git/kimuralab/Other')
 import numpy as np
-import matplotlib.pyplot as plt
 import math
+import matplotlib.pyplot as plt
 import time
-import Motor
 import BMX055
+import Motor
+import Other
 from scipy.stats import norm
 from scipy import odr
 from scipy import optimize
@@ -96,19 +98,12 @@ def readDir(calData):
 	bmx055data = BMX055.bmx055_read()
 	return math.atan2((bmx055data[6]-calData[0])/calData[2], (bmx055data[7]-calData[1])/calData[3])*180/math.pi
 
-def fileName(f):
-	i = 0
-	while(os.path.exists(f+str(i) + ".txt")):
-		i = i + 1
-	f = f + str(i) + ".txt"
-	return f
-
 
 if __name__ == '__main__':
 	try:
 		BMX055.bmx055_setup()
 		time.sleep(1)
-		file = fileName("calData")
+		file = Other.fileName("calData")
 		readCalData(file)
 		cal_data = Calibration(file)
 		for i in range(4):
