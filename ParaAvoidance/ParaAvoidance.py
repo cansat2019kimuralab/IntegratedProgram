@@ -8,7 +8,6 @@ import pigpio
 import binascii
 import Capture
 import ParaDetection
-import IM920
 import Motor
 import TSL2561
 import cv2
