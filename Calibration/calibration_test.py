@@ -20,7 +20,7 @@ if __name__ == '__main__':
 		BMX055.bmx055_setup()
 		count = 0
 		while count <= 200:
-			Motor.motor(30, -30)
+			Motor.motor(30, 30)
 			bmx055data = BMX055.bmx055_read()
 			with open(file, 'a') as f:
 				for i in range(6, 8):

@@ -48,7 +48,7 @@ def ParaAvoidance():
 	flug = ParaDetection.ParaDetection(img)
 
 	if flug == 1:
-		Motor.motor(30,30,3)
+		Motor.motor(50,50,3)
 		Motor.motor(0,0,2)
 		#Motor.motor(-30,30,0.5)
 		#Motor.motor(0,0,2)
@@ -60,7 +60,7 @@ def ParaAvoidance():
 		#img = cv2.imread('photo/photo' + str(n) + '.jpg')
 		#flug = ParaDetection.ParaDetection(img)
 	if flug == 0:
-		Motor.motor(-30,-30,3)
+		Motor.motor(-50,-50,3)
 		Motor.motor(0,0,2)
 
 		#print("START: GPS now")
@@ -73,6 +73,7 @@ def ParaAvoidance():
 		#print("GPS_now is", GPS_now[2], GPS_now[1],"GPS_init is" , GPS_init[2], GPS_init[1])
 		#print("Distance from prachute is", dist)
 
+	return flug
 
 if __name__ == '__main__':
 	#GPS.openGPS()
