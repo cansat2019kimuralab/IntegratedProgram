@@ -44,12 +44,12 @@ def ParaAvoidance():
 	print("SUCCESS: capture")
 
 	print("START: Judge parachute existance")
-	img = cv2.imread('photo/photo' + str(n) + '.jpg')
+	img = cv2.imread('/home/pi/photo/photo' + str(n) + '.jpg')
 	flug = ParaDetection.ParaDetection(img)
 
 	if flug == 1:
 		Motor.motor(50,50,3)
-		Motor.motor(0,0,2)
+		Motor.motor(0, 0, 2)
 		#Motor.motor(-30,30,0.5)
 		#Motor.motor(0,0,2)
 		#print("START: capture again")
@@ -59,9 +59,13 @@ def ParaAvoidance():
 		#print("START: Judge parachute existance")
 		#img = cv2.imread('photo/photo' + str(n) + '.jpg')
 		#flug = ParaDetection.ParaDetection(img)
+		Motor.motor(50, 50, 3)
+		Motor.motor(0, 0, 2)
 	if flug == 0:
 		Motor.motor(-50,-50,3)
-		Motor.motor(0,0,2)
+		Motor.motor(0 ,0, 2)
+		Motor.motor(-50, -50, 3)
+		Motor.motor(0, 0, 2)
 
 		#print("START: GPS now")
 		#GPS_now = GPS.readGPS()
