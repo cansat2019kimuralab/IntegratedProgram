@@ -96,8 +96,7 @@ def Calibration(path):
 	#plt.show()
 	return cal_data
 
-def readDir(calData):
-	bmx055data = BMX055.bmx055_read()
+def readDir(calData, bmx055data):
 	return math.atan2((bmx055data[6]-calData[0])/calData[2], (bmx055data[7]-calData[1])/calData[3])*180/math.pi
 
 
