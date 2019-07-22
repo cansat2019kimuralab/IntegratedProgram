@@ -16,9 +16,10 @@ import TSL2561
 
 
 def ParaJudge(LuxThd):
-
+	Motor.motor(30,30,0.2)
+	Motor.motor(0,0,0.2)
 	lux=TSL2561.readLux()
-	#print("lux1: "+str(lux[0]))
+	print("lux1: "+str(lux[0]))
 
 	if lux[0] < LuxThd:
 		time.sleep(1)
@@ -28,39 +29,37 @@ def ParaJudge(LuxThd):
 		return 1
 
 def ParaAvoidance(photopath):
-	Motor.motor(50, 50, 0.5)
-	Motor.motor(0, 0, 2)
-	#print("START: capture")
+	print("START: capture")
 	photoname = Capture.Capture(photopath)
-	#print("SUCCESS: capture")
+	print("SUCCESS: capture")
 
-	#print("START: Judge parachute existance")
+	print("START: Judge parachute existance")
 	img = cv2.imread(photoname)
 	flug = ParaDetection.ParaDetection(img)
 
 	if flug == 1:
-		Motor.motor(50, 50, 3)
+		Motor.motor(-50, -50, 3)
 		Motor.motor(0, 0, 2)
 
 	if flug == 0:
-		Motor.motor(-50, -50, 3)
+		Motor.motor(50, 50, 3)
 		Motor.motor(0 ,0, 2)
 
 	return [flug,photoname]
 
 if __name__ == '__main__':
-	#GPS.openGPS()
 	print("START: Judge covered by Parachute")
 	t2 = time.time()
 	t1 = t2
 	while t2 - t1 < 60:
-		ParaJudge(100)
+		Luxflug = ParaJudge(100)
+		if Luxflug == 1:
+			break
 		t1 =time.time()
 	print("START: Parachute avoidance")
 	try:
-		ParaAvoidance(photo)
+		ParaAvoidance("photo")
 	except KeyboardInterrupt:
 		print("Emergency!")
 		Motor.motor_stop()
-		#GPS.closeGPS()
 	Motor.motor_stop()
