@@ -6,6 +6,7 @@ sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/Motor')
 sys.path.append('/home/pi/git/kimuralab/IntegratedProgram/Calibration')
 sys.path.append('/home/pi/git/kimuralab/Other')
 import math
+import numpy as np
 import time
 import pigpio
 import serial
@@ -21,7 +22,7 @@ fileCal = "" 						#file path for Calibration
 ellipseScale = [0.0, 0.0, 0.0, 0.0] #Convert coefficient Ellipse to Circle
 disGoal = 100.0						#Distance from Goal [m]
 angGoal = 0.0						#Angle toword Goal [deg]
-angOffset = -83.0					#Angle Offset towrd North [deg]
+angOffset = -77.0					#Angle Offset towrd North [deg]
 gLat, gLon = 35.918181, 139.907992	#Coordinates of That time
 #gLat, gLon = 35.933724, 139.907316
 nLat, nLon = 0.0, 0.0		  		#Coordinates of That time
@@ -58,7 +59,7 @@ if __name__ == "__main__":
 		time.sleep(1)
 
 		fileCal = Other.fileName(calibrationLog, "txt")
-		
+
 		Calibration.readCalData(fileCal)
 		ellipseScale = Calibration.Calibration(fileCal)
 		Other.saveLog(fileCal, ellipseScale)
@@ -66,10 +67,30 @@ if __name__ == "__main__":
 		gpsInterval = 0
 
 		#Get GPS data
+		print("Getting GPS Data")
 		while(gpsData[1] == -1.0 or gpsData[2] == 0.0):
 			gpsData = GPS.readGPS()
+			print(gpsData)
+			time.sleep(1)
 
+		print("Runnning Start")
 		while disGoal >= 5:
+			'''
+			if(gpsInterval == 100):
+				latA = [0.0, 0.0, 0.0]
+				lonA = [0.0, 0.0, 0.0]
+				for i in range(3):
+					gpsData = GPS.readGPS()
+					while(gpsData[1] == -1.0 or gpsData[2] == 0.0):
+						gpsData = GPS.readGPS()
+						latA[i] = gpsData[1]
+						lonA[i] = gpsData[2]
+					nLat = np.median(latA)
+					nLon = np.median(lonA)
+					gpsInterval = 0
+			gpsInterval = gpsInterval + 1
+			'''
+
 			if(gpsData[1] != -1.0 and gpsData[2] != 0.0):
 				nLat = gpsData[1]
 				nLon = gpsData[2]
@@ -89,16 +110,23 @@ if __name__ == "__main__":
 			relAng = relAng if relAng >= -180 else relAng + 360
 
 			#Calculate Motor Power
-			mP = int(relAng * 1.0)
-			mP = 30 if mP > 30 else mP
-			mP = -30 if mP < -30 else mP
+			mPS = int(relAng * (-1.0))
+			mPL = int(40 * (180-relAng)/180) + mPS
+			mPR = int(40 * (180-relAng)/180) - mPS
+
+			mPL = 40 if mPL > 40 else mPL
+			mPL = -40 if mPL < -40 else mPL
+			mPR = 40 if mPR > 40 else mPR
+			mPR = -40 if mPR < -40 else mPR
+
 			#Motor.motor(mP, -mP, 0.001, 1)
 
-			#print(gpsData[1], gpsData[2], disGoal, angGoal, nAng, relAng, mP, gpsInterval)
-			print(nLat, nLon, disGoal, angGoal, nAng, relAng, mP)
+			#print(nLat, nLon, disGoal, angGoal, nAng, relAng, mP, gpsInterval)
+			print(nLat, nLon, disGoal, angGoal, nAng, relAng, mPL, mPR, mPS)
 			#print(gpsData[1], gpsData[2])
-			time.sleep(0.1)
+			#time.sleep(0.1)
 			gpsData = GPS.readGPS()
+			time.sleep(0.1)
 
 		print("Switch to Goal Detection")
 		close()
