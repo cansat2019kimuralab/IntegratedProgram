@@ -19,7 +19,7 @@ dir_data = [0.0, 0.0, 0.0]
 def readCalData(filepath):
 	count = 0
 	while count <= 200:
-		Motor.motor(30, -30)
+		Motor.motor(40, -40)
 		bmx055data = BMX055.bmx055_read()
 		with open(filepath, 'a')   as f:
 			for i in range(6, 8):
