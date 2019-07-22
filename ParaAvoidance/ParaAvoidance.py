@@ -51,10 +51,14 @@ def ParaAvoidance(photopath):
 if __name__ == '__main__':
 	#GPS.openGPS()
 	print("START: Judge covered by Parachute")
-	ParaJudge()
+	t2 = time.time()
+	t1 = t2
+	while t2 - t1 < 60:
+		ParaJudge(100)
+		t1 =time.time()
 	print("START: Parachute avoidance")
 	try:
-		ParaAvoidance()
+		ParaAvoidance(photo)
 	except KeyboardInterrupt:
 		print("Emergency!")
 		Motor.motor_stop()
