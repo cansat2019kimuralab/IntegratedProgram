@@ -24,7 +24,6 @@ disGoal = 100.0						#Distance from Goal [m]
 angGoal = 0.0						#Angle toword Goal [deg]
 angOffset = -77.0					#Angle Offset towrd North [deg]
 gLat, gLon = 35.918181, 139.907992	#Coordinates of That time
-#gLat, gLon = 35.933724, 139.907316
 nLat, nLon = 0.0, 0.0		  		#Coordinates of That time
 nAng = 0.0							#Direction of That time [deg]
 relAng = 0.0						#Relative Direction between Goal and Rober That time [deg]
@@ -53,6 +52,36 @@ def close():
 	GPS.closeGPS()
 	Motor.motor_stop()
 
+def checkGPSstatus(gps):
+	if(gpsData[1] != -1.0 and gpsData[2] != 0.0):
+		return 0
+	else:
+		return 1
+
+def calNAng(calibrationScale, angleOffset):
+	bmx055Data = BMX055.bmx055_read()
+	nowAng = Calibration.readDir(calibrationScale, bmx055Data) - angleOffset
+	nowAng = nowAng if nowAng <= 180.0 else nowAng - 360.0
+	nowAng = nowAng if nowAng >= -180.0 else nowAng + 360.0
+	return nowAng
+
+def calGoal(nowLat, nowLon, goalLat, goalLon, nowAng):
+	distanceGoal, angleGoal = GPS.Cal_RhoAng(nowLat, nowLon, goalLat, goalLon)
+	relativeAng = angleGoal - nowAng
+	relativeAng = relativelAng if relativeAng <= 180 else relativeAng - 360
+	relativeAng = relativeAng if relativeAng >= -180 else relativeAng + 360
+	return [distanceGoal, angleGoal, relativeAng]
+
+def runMotorSpeed(relativeAng):
+	mPSin = int(relativeAng * (-1.0))
+	mPLeft = int(50 * (180-relativeAng)/180) + mPSpin
+	mPRight = int(50 * (180-relativeAng)/180) - mPSpin
+	mPLeft = 50 if mPLeft > 50 else mPLeft
+	mPLeft = -50 if mPLeft < -50 else mPLeft
+	mPRight = 50 if mPRight > 50 else mPRight
+	mPRight = -50 if mPRight < -50 else mPRight
+	return [mPL, mPR, mPS]
+
 if __name__ == "__main__":
 	try:
 		setup()
@@ -68,63 +97,29 @@ if __name__ == "__main__":
 
 		#Get GPS data
 		print("Getting GPS Data")
-		while(gpsData[1] == -1.0 or gpsData[2] == 0.0):
+		while(not checkGPSstatus(gpsData)):
 			gpsData = GPS.readGPS()
-			print(gpsData)
 			time.sleep(1)
 
 		print("Runnning Start")
-		while disGoal >= 5:
-			'''
-			if(gpsInterval == 100):
-				latA = [0.0, 0.0, 0.0]
-				lonA = [0.0, 0.0, 0.0]
-				for i in range(3):
-					gpsData = GPS.readGPS()
-					while(gpsData[1] == -1.0 or gpsData[2] == 0.0):
-						gpsData = GPS.readGPS()
-						latA[i] = gpsData[1]
-						lonA[i] = gpsData[2]
-					nLat = np.median(latA)
-					nLon = np.median(lonA)
-					gpsInterval = 0
-			gpsInterval = gpsInterval + 1
-			'''
-
-			if(gpsData[1] != -1.0 and gpsData[2] != 0.0):
+		while(disGoal >= 5):
+			if(checkGPSstatus(gpsData)):
 				nLat = gpsData[1]
 				nLon = gpsData[2]
 
 			#Calculate angle
-			bmx055Data = BMX055.bmx055_read()
-			nAng = Calibration.readDir(ellipseScale, bmx055Data) - angOffset
-			nAng = nAng if nAng <= 180.0 else nAng - 360.0
-			nAng = nAng if nAng >= -180.0 else nAng + 360.0
+			nAng = calNAng(ellipseScale, angOffset)
 
 			#Calculate disGoal and relAng
-			#nLat = gpsData[1]
-			#nLon = gpsData[2]
-			disGoal, angGoal = GPS.Cal_RhoAng(nLat, nLon, gLat, gLon)
-			relAng = angGoal - nAng
-			relAng = relAng if relAng <= 180 else relAng - 360
-			relAng = relAng if relAng >= -180 else relAng + 360
+			disGoal, angGoal, relAng = calGoal(nLat, nLon, gLat, gLon, nAng)
 
 			#Calculate Motor Power
-			mPS = int(relAng * (-1.0))
-			mPL = int(50 * (180-relAng)/180) + mPS
-			mPR = int(50 * (180-relAng)/180) - mPS
-
-			mPL = 50 if mPL > 50 else mPL
-			mPL = -50 if mPL < -50 else mPL
-			mPR = 50 if mPR > 50 else mPR
-			mPR = -50 if mPR < -50 else mPR
+			mPL, mPR, mPS = runMotorSpeed(relAng)
 
 			Motor.motor(mPL, mPR, 0.001, 1)
 
-			#print(nLat, nLon, disGoal, angGoal, nAng, relAng, mP, gpsInterval)
 			print(nLat, nLon, disGoal, angGoal, nAng, relAng, mPL, mPR, mPS)
-			#print(gpsData[1], gpsData[2])
-			#time.sleep(0.1)
+			Other.saveLog(runningLog, time.time(), nLat, nLon, disGoal, angGoal, nAng, relAng, mPL, mPR, mPS)
 			gpsData = GPS.readGPS()
 			time.sleep(0.1)
 
