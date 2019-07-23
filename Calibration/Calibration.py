@@ -28,6 +28,7 @@ def readCalData(filepath):
 			print()
 			f.write("\n")
 		count = count + 1
+		time.sleep(0.1)
 	Motor.motor(0, 0, 1)
 
 def ellipse(B, x):
@@ -40,8 +41,9 @@ def Calibration(path):
 		y_csv = []
 		for line in lines:
 			word = line.split()
-			x_csv.append(float(word[0]))
-			y_csv.append(float(word[1]))
+			if(abs(float(word[0])) < 500 and abs(float(word[1])) < 500): 
+				x_csv.append(float(word[0]))
+				y_csv.append(float(word[1]))
 
 	xx_csv = x_csv
 	yy_csv = y_csv
@@ -84,16 +86,11 @@ def Calibration(path):
 	myodr = odr.ODR(mydata, mdr, beta0=[1.,2.])
 	myoutput = myodr.run()
 
-	x_csv = x_csv / 100.* myoutput.beta[1]
-	y_csv = y_csv / 100.* myoutput.beta[0]
+	x_csv = x_csv / 70.* myoutput.beta[1]
+	y_csv = y_csv / 70.* myoutput.beta[0]
 
-	cal_data = [x_ave, y_ave, 100.*myoutput.beta[1], 100.*myoutput.beta[0]]
+	cal_data = [x_ave, y_ave, 70.*myoutput.beta[1], 70.*myoutput.beta[0]]
 
-	#plt.scatter(xx_csv, yy_csv, c="blue")
-	#plt.scatter(x_csv, y_csv, c="red")
-	#plt.grid()
-	#plt.axes().set_aspect('equal')
-	#plt.show()
 	return cal_data
 
 def readDir(calData):
