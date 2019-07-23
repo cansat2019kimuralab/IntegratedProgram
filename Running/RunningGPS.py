@@ -111,15 +111,15 @@ if __name__ == "__main__":
 
 			#Calculate Motor Power
 			mPS = int(relAng * (-1.0))
-			mPL = int(40 * (180-relAng)/180) + mPS
-			mPR = int(40 * (180-relAng)/180) - mPS
+			mPL = int(50 * (180-relAng)/180) + mPS
+			mPR = int(50 * (180-relAng)/180) - mPS
 
-			mPL = 40 if mPL > 40 else mPL
-			mPL = -40 if mPL < -40 else mPL
-			mPR = 40 if mPR > 40 else mPR
-			mPR = -40 if mPR < -40 else mPR
+			mPL = 50 if mPL > 50 else mPL
+			mPL = -50 if mPL < -50 else mPL
+			mPR = 50 if mPR > 50 else mPR
+			mPR = -50 if mPR < -50 else mPR
 
-			#Motor.motor(mP, -mP, 0.001, 1)
+			Motor.motor(mPL, mPR, 0.001, 1)
 
 			#print(nLat, nLon, disGoal, angGoal, nAng, relAng, mP, gpsInterval)
 			print(nLat, nLon, disGoal, angGoal, nAng, relAng, mPL, mPR, mPS)
@@ -128,6 +128,7 @@ if __name__ == "__main__":
 			gpsData = GPS.readGPS()
 			time.sleep(0.1)
 
+		Motor.motor(0, 0, 2)
 		print("Switch to Goal Detection")
 		close()
 	except KeyboardInterrupt:
