@@ -24,18 +24,24 @@ def Togoal():
         if GAP > 0:
 		    #goal right
             Motor.motor(50,20,0.3)
+            return 1
 
         elif GAP < 0:
 		    #gaol left
             Motor.motor(20,50,0.3)
+            return 2
 
         else :
             #goal center
             Motor.motor(30,30,0.3)
+            return 3
+
 if __name__ == "__main__":
     try:
-        while Togoal() != 0:
-            Togoal()
+        goal = Togoal()
+        while goal != 0:
+            print(goal)
+            goal = Togoal()
     except KeyboardInterrupt:
         print("Emergency!")
         Motor.motor_stop()
