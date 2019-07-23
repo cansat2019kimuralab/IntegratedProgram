@@ -19,7 +19,7 @@ dir_data = [0.0, 0.0, 0.0]
 def readCalData(filepath):
 	count = 0
 	while count <= 200:
-		Motor.motor(30, -30)
+		Motor.motor(40, -40)
 		bmx055data = BMX055.bmx055_read()
 		with open(filepath, 'a')   as f:
 			for i in range(6, 8):
@@ -93,8 +93,7 @@ def Calibration(path):
 
 	return cal_data
 
-def readDir(calData):
-	bmx055data = BMX055.bmx055_read()
+def readDir(calData, bmx055data):
 	return math.atan2((bmx055data[6]-calData[0])/calData[2], (bmx055data[7]-calData[1])/calData[3])*180/math.pi
 
 
