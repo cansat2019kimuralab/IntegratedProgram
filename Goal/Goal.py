@@ -34,8 +34,9 @@ def Togoal():
             Motor.motor(30,30,0.3)
 if __name__ == "__main__":
     try:
-        while Togoal() != 0:
-            Togoal()
+        goal = Togoal()
+        while goal != 0:
+            goal = Togoal()
     except KeyboardInterrupt:
         print("Emergency!")
         Motor.motor_stop()
