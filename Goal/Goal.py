@@ -26,6 +26,7 @@ def Togoal(photopath, H_min, H_max, S_thd):
 		mPL, mPR, switch = CurvingSwitch(GAP, speed)
 		Motor.motor(mPL, mPR, 1)
 		Motor.motor(0, 0, 0.3)
+		#switch 1:goal right 2:goal left 3:goal center
 		return switch
 
 def SpeedSwitch(L):
@@ -54,14 +55,13 @@ def CurvingSwitch(GAP, speed):
 	if GAP > 0:
 		mPLeft = speed * RATE
 		mPRight = speed * rate
+		return [mPLeft, mPRight, 1]
 
 	else:
 		mPLeft = speed * rate
 		mPRight = speed * RATE
 		return [mPLeft, mPRight, 2]
-
-	return [mPLeft, mPRight, 1]
-
+		
 if __name__ == "__main__":
 	try:
 		count = 0
