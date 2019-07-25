@@ -1,7 +1,7 @@
 # Goal.py
 ---
 ## Togoal(photopath, H_min, h_max, S_thd)  
-<dt>引数</dt>  
+### 引数  
  - photopath:写真のpath  
  - H_min:色相の最大値  
  - H_max:色相の最小値  
