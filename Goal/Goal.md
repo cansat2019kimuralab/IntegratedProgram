@@ -2,7 +2,7 @@
 ---
 ## Togoal(photopath, H_min, h_max, S_thd)  
 ### 引数  
-      - photopath:写真のpath  
+ - photopath:写真のpath  
  - H_min:色相の最大値  
  - H_max:色相の最小値  
  - S_thd:彩度の閾値  
