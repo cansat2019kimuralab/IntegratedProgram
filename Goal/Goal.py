@@ -17,8 +17,8 @@ import Other
 
 def Togoal(photopath, H_min, H_max, S_thd):
 	area, GAP, photoname = goal_detection.GoalDetection(photopath, H_min, H_max, S_thd)
-	print("GAP is",GAP)
-	print("area is",area)
+	#print("GAP is",GAP)
+	#print("area is",area)
 	if area == -1 and GAP == 0:
 		Motor.motor(0, 0, 0.3)
 		return [0,photoname]
@@ -79,7 +79,6 @@ def CurvingSwitch(GAP):
 if __name__ == "__main__":
 	try:
 		GPS.openGPS()
-		gpsData = GPS.readGPS()
 		count = 0
 		ahh = 0
 		H_min = 200
@@ -87,6 +86,7 @@ if __name__ == "__main__":
 		S_thd = 120
 		goal = Togoal("photo/photo", H_min, H_max, S_thd)
 		while goal[0] != 0:
+			gpsData = GPS.readGPS()
 			goal = Togoal("photo/photo", H_min, H_max, S_thd)
 			print("goal flug is",goal)
 			Other.saveLog("GoalLog.txt", time.time(), gpsData[1], gpsData[2], goal)
