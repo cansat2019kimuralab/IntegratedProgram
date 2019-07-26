@@ -8,6 +8,7 @@ sys.path.append('/home/pi/git/kimuralab/Other')
 import math
 import numpy as np
 import time
+import traceback
 import pigpio
 import serial
 import os
@@ -26,15 +27,16 @@ angOffset = -77.0					#Angle Offset towrd North [deg]
 gLat, gLon = 35.918181, 139.907992	#Coordinates of That time
 nLat, nLon = 0.0, 0.0		  		#Coordinates of That time
 nAng = 0.0							#Direction of That time [deg]
-relAng = 0.0						#Relative Direction between Goal and Rober That time [deg]
+relAng = [0.0, 0.0, 0.0]			#Relative Direction between Goal and Rober That time [deg]
+rAng = 0.0
 mP = 0								#Motor Power
 gpsInterval = 0						#GPS Log Interval Time
 
 gpsData = [0.0, -1.0, -1.0, 0.0, 0.0]						#variable to store GPS data
 bmx055data = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]	#variable to store BMX055data
 
-runningLog = "runningLog.txt"
-calibrationLog = "calibrationLog"
+runningLog = "log/runningLog.txt"
+calibrationLog = "log/calibrationLog"
 
 pi = pigpio.pi()	#object to set pigpio
 
@@ -45,18 +47,16 @@ def setup():
 	time.sleep(1)
 	BMX055.bmx055_setup()
 	GPS.openGPS()
-	with open('log/runningLog.txt', 'w'):
-		pass
 
 def close():
 	GPS.closeGPS()
 	Motor.motor_stop()
 
-def checkGPSstatus(gps):
+def checkGPSstatus(gpsData):
 	if(gpsData[1] != -1.0 and gpsData[2] != 0.0):
-		return 0
-	else:
 		return 1
+	else:
+		return 0
 
 def calNAng(calibrationScale, angleOffset):
 	bmx055Data = BMX055.bmx055_read()
@@ -68,19 +68,19 @@ def calNAng(calibrationScale, angleOffset):
 def calGoal(nowLat, nowLon, goalLat, goalLon, nowAng):
 	distanceGoal, angleGoal = GPS.Cal_RhoAng(nowLat, nowLon, goalLat, goalLon)
 	relativeAng = angleGoal - nowAng
-	relativeAng = relativelAng if relativeAng <= 180 else relativeAng - 360
+	relativeAng = relativeAng if relativeAng <= 180 else relativeAng - 360
 	relativeAng = relativeAng if relativeAng >= -180 else relativeAng + 360
 	return [distanceGoal, angleGoal, relativeAng]
 
 def runMotorSpeed(relativeAng):
-	mPSin = int(relativeAng * (-1.0))
-	mPLeft = int(50 * (180-relativeAng)/180) + mPSpin
-	mPRight = int(50 * (180-relativeAng)/180) - mPSpin
+	mPS = int(relativeAng * (-1.0))
+	mPLeft = int(50 * (180-relativeAng)/180) + mPS
+	mPRight = int(50 * (180-relativeAng)/180) - mPS
 	mPLeft = 50 if mPLeft > 50 else mPLeft
 	mPLeft = -50 if mPLeft < -50 else mPLeft
 	mPRight = 50 if mPRight > 50 else mPRight
 	mPRight = -50 if mPRight < -50 else mPRight
-	return [mPL, mPR, mPS]
+	return [mPLeft, mPRight, mPS]
 
 if __name__ == "__main__":
 	try:
@@ -89,14 +89,16 @@ if __name__ == "__main__":
 
 		fileCal = Other.fileName(calibrationLog, "txt")
 
+		Motor.motor(40, 0, 1)
 		Calibration.readCalData(fileCal)
+		Motor.motor(0, 0, 1)
 		ellipseScale = Calibration.Calibration(fileCal)
 		Other.saveLog(fileCal, ellipseScale)
 
 		gpsInterval = 0
 
 		#Get GPS data
-		print("Getting GPS Data")
+		#print("Getting GPS Data")
 		while(not checkGPSstatus(gpsData)):
 			gpsData = GPS.readGPS()
 			time.sleep(1)
@@ -111,15 +113,19 @@ if __name__ == "__main__":
 			nAng = calNAng(ellipseScale, angOffset)
 
 			#Calculate disGoal and relAng
-			disGoal, angGoal, relAng = calGoal(nLat, nLon, gLat, gLon, nAng)
+			relAng[2] = relAng[1]
+			relAng[1] = relAng[0]
+			disGoal, angGoal, relAng[0] = calGoal(nLat, nLon, gLat, gLon, nAng)
+			rAng = np.median(relAng)
 
 			#Calculate Motor Power
-			mPL, mPR, mPS = runMotorSpeed(relAng)
+			mPL, mPR, mPS = runMotorSpeed(rAng)
 
 			Motor.motor(mPL, mPR, 0.001, 1)
 
-			print(nLat, nLon, disGoal, angGoal, nAng, relAng, mPL, mPR, mPS)
-			Other.saveLog(runningLog, time.time(), nLat, nLon, disGoal, angGoal, nAng, relAng, mPL, mPR, mPS)
+			#Save Log
+			print(nLat, nLon, disGoal, angGoal, nAng, rAng, mPL, mPR, mPS)
+			Other.saveLog(runningLog, time.time(), BMX055.bmx055_read(), nLat, nLon, disGoal, angGoal, nAng, rAng, mPL, mPR, mPS)
 			gpsData = GPS.readGPS()
 			time.sleep(0.1)
 
@@ -129,6 +135,6 @@ if __name__ == "__main__":
 	except KeyboardInterrupt:
 		close()
 		print("Keyboard Interrupt")
-	except Exception as e:
+	except:
 		close()
-		print(e.message)
+		print(traceback.format_exc())
