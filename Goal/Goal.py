@@ -12,8 +12,8 @@ import Motor
 
 def Togoal(photopath, H_min, H_max, S_thd):
 	area, GAP, photoname = goal_detection.GoalDetection(photopath, H_min, H_max, S_thd)
-	print("GAP is",GAP)
-	print("area is",area)
+	#print("GAP is",GAP)
+	#print("area is",area)
 	if area == -1 and GAP == 0:
 		Motor.motor(0, 0, 0.3)
 		return 0
@@ -47,7 +47,7 @@ def Togoal(photopath, H_min, H_max, S_thd):
 		#switch 1:goal center 2:goal left 3:goal right
 		return switch
 
-def SpeedSwitch(L):
+def SpeedSwitch(area):
 	if area < 5000 :
 		return 70
 	elif area < 10000:
