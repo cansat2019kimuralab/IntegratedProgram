@@ -11,66 +11,81 @@ import goal_detection
 import Motor
 
 def Togoal(photopath, H_min, H_max, S_thd):
-	L, GAP, photoname = goal_detection.GoalDetection(photopath, H_min, H_max, S_thd)
-	if L == 0 and GAP == 0:
+	area, GAP, photoname = goal_detection.GoalDetection(photopath, H_min, H_max, S_thd)
+	print("GAP is",GAP)
+	print("area is",area)
+	if area == -1 and GAP == 0:
 		Motor.motor(0, 0, 0.3)
 		return 0
 	
-	elif L == -1 and GAP == -1:
-		Motor.motor(-50, 50, 0.3)
+	elif area == 0 and GAP == -1:
+		Motor.motor(-50, 50, 0.2, 1)
 		Motor.motor(0, 0, 0.3)
+		time.sleep(1)
 		return -1
 
 	else:
 		speed = SpeedSwitch(L)
-		mPL, mPR, switch = CurvingSwitch(GAP, speed)
-		Motor.motor(mPL, mPR, 1)
+		t, switch = CurvingSwitch(GAP)
+		if switch == 1:
+			mPL = speed
+			mPR = speed
+		elif switch == 2:
+			mPL = -speed
+			mPR = speed
+		elif switch == 3:
+			mPL = speed
+			mPR = -speed
+		else:
+			print("Error")
+		Motor.motor(mPL, mPR, t, 1)
 		Motor.motor(0, 0, 0.3)
-		#switch 1:goal right 2:goal left 3:goal center
+		time.sleep(1)
+		Motor.motor(20, 20, 0.2, 1)
+		Motor.motor(0, 0, 0.3)
+		time.sleep(1)
+		#switch 1:goal center 2:goal left 3:goal right
 		return switch
 
 def SpeedSwitch(L):
-	if L > 10:
+	if area < 5000 :
 		return 70
-	elif L > 5:
-		return 50
+	elif area < 10000:
+		return 60
 	else:
-		return 30 
+		return 50 
 
-def CurvingSwitch(GAP, speed):
-	if GAP == 0:
-		return [speed, speed, 3]
-	elif abs(GAP) < 40:
-		RATE = 1
-		rate = 0.8
-	elif abs(GAP) < 80:
-		RATE = 1
-		rate = 0.7
-	elif abs(GAP) < 120:
-		RATE = 1
-		rate = 0.6
+def CurvingSwitch(GAP):
+	if abs(GAP) < 20:
+		t = 0.8
+		return [t, 1]
+	elif abs(GAP) < 70:
+		t = 0.1
+
 	else:
-		RATE = 1
-		rate = 0.5
+		t = 0.15
+
 	if GAP > 0:
-		mPLeft = speed * RATE
-		mPRight = speed * rate
-		return [mPLeft, mPRight, 1]
+		return [t, 3]
 
 	else:
-		mPLeft = speed * rate
-		mPRight = speed * RATE
-		return [mPLeft, mPRight, 2]
+		return [t, 2]
 		
 if __name__ == "__main__":
 	try:
+		GPS.openGPS()
+		gpsData = GPS.readGPS()
 		count = 0
 		ahh = 0
 		H_min = 200
 		H_max = 10
 		S_thd = 120
-		goal = Togoal("photo", H_min, H_max, S_thd)
+		goal = Togoal("photo/photo", H_min, H_max, S_thd)
 		while goal != 0:
+			goal = Togoal("photo/photo", H_min, H_max, S_thd)
+			print("goal flug is",goal)
+			Other.savelog(GoalLog, time.time(), gpsData[1], gpsData[2], max_area, GAP)
+			"""
 			while count < 10:
 				print(goal)
 				goal = Togoal("photo", H_min, H_max, S_thd)
@@ -84,7 +99,10 @@ if __name__ == "__main__":
 			if ahh == 5:
 				print("runningGPS again")
 				break
+			"""
+		GPS.closeGPS()
 
 	except KeyboardInterrupt:
 		print("Emergency!")
 		Motor.motor_stop()
+		GPS.closeGPS()
