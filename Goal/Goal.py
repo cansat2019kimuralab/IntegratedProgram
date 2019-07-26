@@ -1,5 +1,7 @@
 import sys
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/Motor')
+sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/GPS')
+sys.path.append('/home/pi/git/kimuralab/Other')
 sys.path.append('/home/pi/git/kimuralab/Detection/GoalDetection')
 import time
 import cv2
@@ -7,8 +9,11 @@ import numpy as np
 import difflib
 import pigpio
 import binascii
+import traceback
 import goal_detection
 import Motor
+import GPS
+import Other
 
 def Togoal(photopath, H_min, H_max, S_thd):
 	area, GAP, photoname = goal_detection.GoalDetection(photopath, H_min, H_max, S_thd)
@@ -16,16 +21,16 @@ def Togoal(photopath, H_min, H_max, S_thd):
 	print("area is",area)
 	if area == -1 and GAP == 0:
 		Motor.motor(0, 0, 0.3)
-		return 0
+		return [0,photoname]
 	
 	elif area == 0 and GAP == -1:
 		Motor.motor(-50, 50, 0.2, 1)
 		Motor.motor(0, 0, 0.3)
 		time.sleep(1)
-		return -1
+		return [-1,photoname]
 
 	else:
-		speed = SpeedSwitch(L)
+		speed = SpeedSwitch(area)
 		t, switch = CurvingSwitch(GAP)
 		if switch == 1:
 			mPL = speed
@@ -45,25 +50,25 @@ def Togoal(photopath, H_min, H_max, S_thd):
 		Motor.motor(0, 0, 0.3)
 		time.sleep(1)
 		#switch 1:goal center 2:goal left 3:goal right
-		return switch
+		return [switch, photoname]
 
-def SpeedSwitch(L):
+def SpeedSwitch(area):
 	if area < 5000 :
-		return 70
+		return 50
 	elif area < 10000:
-		return 60
+		return 50
 	else:
 		return 50 
 
 def CurvingSwitch(GAP):
-	if abs(GAP) < 20:
+	if abs(GAP) < 40:
 		t = 0.8
 		return [t, 1]
 	elif abs(GAP) < 70:
-		t = 0.1
+		t = 0.06
 
 	else:
-		t = 0.15
+		t = 0.1
 
 	if GAP > 0:
 		return [t, 3]
@@ -81,10 +86,10 @@ if __name__ == "__main__":
 		H_max = 10
 		S_thd = 120
 		goal = Togoal("photo/photo", H_min, H_max, S_thd)
-		while goal != 0:
+		while goal[0] != 0:
 			goal = Togoal("photo/photo", H_min, H_max, S_thd)
 			print("goal flug is",goal)
-			Other.savelog(GoalLog, time.time(), gpsData[1], gpsData[2], max_area, GAP)
+			Other.saveLog("GoalLog.txt", time.time(), gpsData[1], gpsData[2], goal)
 			"""
 			while count < 10:
 				print(goal)
@@ -106,3 +111,6 @@ if __name__ == "__main__":
 		print("Emergency!")
 		Motor.motor_stop()
 		GPS.closeGPS()
+	except:
+		GPS.closeGPS()
+		print(traceback.format_exc())
