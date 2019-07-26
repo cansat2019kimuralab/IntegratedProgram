@@ -74,7 +74,6 @@ def CurvingSwitch(GAP):
 if __name__ == "__main__":
 	try:
 		GPS.openGPS()
-		gpsData = GPS.readGPS()
 		count = 0
 		ahh = 0
 		H_min = 200
@@ -82,6 +81,7 @@ if __name__ == "__main__":
 		S_thd = 120
 		goal = Togoal("photo/photo", H_min, H_max, S_thd)
 		while goal != 0:
+			gpsData = GPS.readGPS()
 			goal = Togoal("photo/photo", H_min, H_max, S_thd)
 			print("goal flug is",goal)
 			Other.savelog(GoalLog, time.time(), gpsData[1], gpsData[2], max_area, GAP)
