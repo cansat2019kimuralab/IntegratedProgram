@@ -21,13 +21,13 @@ def Togoal(photopath, H_min, H_max, S_thd):
 	#print("area is",area)
 	if area == -1 and GAP == 0:
 		Motor.motor(0, 0, 0.3)
-		return [0,photoname]
+		return [0, area, GAP, photoname]
 	
 	elif area == 0 and GAP == -1:
 		Motor.motor(-50, 50, 0.2, 1)
 		Motor.motor(0, 0, 0.3)
 		time.sleep(1)
-		return [-1,photoname]
+		return [-1, area, GAP, photoname]
 
 	else:
 		speed = SpeedSwitch(area)
@@ -50,7 +50,7 @@ def Togoal(photopath, H_min, H_max, S_thd):
 		Motor.motor(0, 0, 0.3)
 		time.sleep(1)
 		#switch 1:goal center 2:goal left 3:goal right
-		return [switch, photoname]
+		return [switch, area, GAP, photoname]
 
 def SpeedSwitch(area):
 	if area < 5000 :
