@@ -46,6 +46,9 @@ def Togoal(photopath, H_min, H_max, S_thd):
 		Motor.motor(mPL, mPR, t, 1)
 		Motor.motor(0, 0, 0.3)
 		time.sleep(1)
+		if(switch == 2 or switch == 3):
+			Motor.motor(30, 30, 0.5, 1)
+			Motor.motor(0, 0, 1)
 		Motor.motor(20, 20, 0.2, 1)
 		Motor.motor(0, 0, 0.3)
 		time.sleep(1)
