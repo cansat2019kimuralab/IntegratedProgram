@@ -24,9 +24,9 @@ def Togoal(photopath, H_min, H_max, S_thd):
 		return [0, area, GAP, photoname]
 	
 	elif area == 0 and GAP == -1:
-		Motor.motor(-50, 50, 0.2, 1)
-		Motor.motor(0, 0, 0.3)
-		time.sleep(1)
+		Motor.motor(0, 25, 0.2, 1)
+		#Motor.motor(0, 0, 0.3)
+		#time.sleep(1)
 		return [-1, area, GAP, photoname]
 
 	else:
@@ -47,7 +47,7 @@ def Togoal(photopath, H_min, H_max, S_thd):
 		Motor.motor(0, 0, 0.3)
 		time.sleep(1)
 		if(switch == 2 or switch == 3):
-			Motor.motor(30, 30, 0.5, 1)
+			Motor.motor(40, 30, 0.7, 1)
 			Motor.motor(0, 0, 1)
 		Motor.motor(20, 20, 0.2, 1)
 		Motor.motor(0, 0, 0.3)

@@ -73,13 +73,13 @@ def calGoal(nowLat, nowLon, goalLat, goalLon, nowAng):
 	return [distanceGoal, angleGoal, relativeAng]
 
 def runMotorSpeed(relativeAng):
-	mPS = int(relativeAng * (-1.0))
-	mPLeft = int(50 * (180-relativeAng)/180) + mPS
-	mPRight = int(50 * (180-relativeAng)/180) - mPS
-	mPLeft = 50 if mPLeft > 50 else mPLeft
-	mPLeft = -50 if mPLeft < -50 else mPLeft
-	mPRight = 50 if mPRight > 50 else mPRight
-	mPRight = -50 if mPRight < -50 else mPRight
+	mPS = int(relativeAng * (-0.7))
+	mPLeft = int(60 * (180-relativeAng)/180) + mPS
+	mPRight = int(60 * (180-relativeAng)/180) - mPS
+	mPLeft = 60 if mPLeft > 60 else mPLeft
+	mPLeft = 0 if mPLeft < 0 else mPLeft
+	mPRight = 60 if mPRight > 60 else mPRight
+	mPRight = 0 if mPRight < 0 else mPRight
 	return [mPLeft, mPRight, mPS]
 
 if __name__ == "__main__":
