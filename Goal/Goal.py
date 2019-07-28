@@ -1,6 +1,7 @@
 import sys
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/Motor')
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/GPS')
+sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/BMX055')
 sys.path.append('/home/pi/git/kimuralab/Other')
 sys.path.append('/home/pi/git/kimuralab/Detection/GoalDetection')
 import time
@@ -10,6 +11,7 @@ import difflib
 import pigpio
 import binascii
 import traceback
+import BMX055
 import goal_detection
 import Motor
 import GPS
@@ -21,10 +23,11 @@ def Togoal(photopath, H_min, H_max, S_thd):
 	#print("area is",area)
 	if area == -1 and GAP == 0:
 		Motor.motor(0, 0, 0.3)
-		return [0, area, GAP, photoname]
+		return [0, ,area, GAP, photoname]
 	
 	elif area == 0 and GAP == -1:
 		Motor.motor(0, 25, 0.2, 1)
+		BMX055.bmx055_read()
 		#Motor.motor(0, 0, 0.3)
 		#time.sleep(1)
 		return [-1, area, GAP, photoname]
@@ -46,9 +49,6 @@ def Togoal(photopath, H_min, H_max, S_thd):
 		Motor.motor(mPL, mPR, t, 1)
 		Motor.motor(0, 0, 0.3)
 		time.sleep(1)
-		if(switch == 2 or switch == 3):
-			Motor.motor(40, 30, 0.7, 1)
-			Motor.motor(0, 0, 1)
 		Motor.motor(20, 20, 0.2, 1)
 		Motor.motor(0, 0, 0.3)
 		time.sleep(1)
@@ -59,9 +59,9 @@ def SpeedSwitch(area):
 	if area < 5000 :
 		return 50
 	elif area < 10000:
-		return 50
+		return 40
 	else:
-		return 50 
+		return 30 
 
 def CurvingSwitch(GAP):
 	if abs(GAP) < 40:
@@ -82,6 +82,7 @@ def CurvingSwitch(GAP):
 if __name__ == "__main__":
 	try:
 		GPS.openGPS()
+		BMX.bmx055_setup()
 		count = 0
 		ahh = 0
 		H_min = 200
