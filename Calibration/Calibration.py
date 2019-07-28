@@ -22,9 +22,9 @@ def readCalData(filepath):
 		bmx055data = BMX055.bmx055_read()
 		with open(filepath, 'a')   as f:
 			for i in range(6, 8):
-				print(str(bmx055data[i]) + "\t", end="")
+				#print(str(bmx055data[i]) + "\t", end="")
 				f.write(str(bmx055data[i]) + "\t")
-			print()
+			#print()
 			f.write("\n")
 		count = count + 1
 		time.sleep(0.1)
@@ -85,10 +85,10 @@ def Calibration(path):
 	myodr = odr.ODR(mydata, mdr, beta0=[1.,2.])
 	myoutput = myodr.run()
 
-	x_csv = x_csv / 70.* myoutput.beta[1]
-	y_csv = y_csv / 70.* myoutput.beta[0]
+	x_csv = x_csv * 7000.0 / myoutput.beta[1]
+	y_csv = y_csv * 7000.0 / myoutput.beta[0]
 
-	cal_data = [x_ave, y_ave, 70.*myoutput.beta[1], 70.*myoutput.beta[0]]
+	cal_data = [x_ave, y_ave, myoutput.beta[1] / 100, myoutput.beta[0] / 100]
 
 	return cal_data
 
@@ -101,20 +101,22 @@ if __name__ == '__main__':
 		BMX055.bmx055_setup()
 		time.sleep(1)
 		file = Other.fileName("calData", "txt")
+		Motor.motor(30, 0, 1)
 		readCalData(file)
+		Motor.motor(0, 0, 1)
 		cal_data = Calibration(file)
 		for i in range(4):
 			print(cal_data[i])
 		Other.saveLog(file, cal_data)
 
 		for i in range(3):
-			dir_data[i] = readDir(cal_data)
+			dir_data[i] = readDir(cal_data, BMX055.bmx055_read())
 			time.sleep(0.1)
 
 		while 1:
 			dir_data[2] = dir_data[1]		#Thrid latest data
 			dir_data[1] = dir_data[0]		#Second latest data
-			dir_data[0] = readDir(cal_data)	#latest data
+			dir_data[0] = readDir(cal_data, BMX055.bmx055_read())	#latest data
 			dir = np.median(dir_data)
 			print(str(dir) + "\t", end="")
 			mP = int(dir * 1.0)
