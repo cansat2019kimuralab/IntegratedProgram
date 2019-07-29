@@ -33,15 +33,10 @@ if __name__ == "__main__":
 			e2 = e1
 			e =  spinZ - spinGoal
 			mP = mP + Kp * (e-e1) + Ki * e + Kd * ((e-e1) - (e1-e2))
-			print(mP, spinZ)
-			if spinGoal < 0:
-				mP = mP if mP <= 50 else 50
-				if mP < 0:
-					mP = 20
-			else:
-				mP = mP if mP >= -50 else -50
-				if mP > 0:
-					mP = -20
+			#print(spinZ, mP)
+			mP = mP if mP <= 50 else 50
+			if mP < 0:
+				mP = 20
 			#print(spinZ, mP)
 			a = Motor.motor(mP, 0)
 			#time.sleep(0.001)
