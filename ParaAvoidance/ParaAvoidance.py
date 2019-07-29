@@ -26,13 +26,7 @@ if __name__ == '__main__':
 	try:
 		Motor.motor(30, 30, 0.5)
 		Motor.motor(0, 0, 0.2)
-		print("START: capture")
-		photoname = Capture.Capture(photopath)
-		print("SUCCESS: capture")
-
-		print("START: Judge parachute existance")
-		img = cv2.imread(photoname)
-		flug, area,  = ParaDetection.ParaDetection(img)
+		flug, area, photoname = ParaDetection.ParaDetection(photo)
 
 		if flug == 1:
 			Motor.motor(-60, -60, 5)
