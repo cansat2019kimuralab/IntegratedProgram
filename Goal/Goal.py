@@ -6,8 +6,6 @@ sys.path.append('/home/pi/git/kimuralab/Other')
 sys.path.append('/home/pi/git/kimuralab/Detection/GoalDetection')
 import time
 import numpy as np
-import difflib
-import pigpio
 import traceback
 import BMX055
 import goal_detection
