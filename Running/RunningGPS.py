@@ -30,7 +30,9 @@ nAng = 0.0							#Direction of That time [deg]
 relAng = [0.0, 0.0, 0.0]			#Relative Direction between Goal and Rober That time [deg]
 rAng = 0.0
 mP = 0								#Motor Power
+kp = 0.7							#P Gain
 gpsInterval = 0						#GPS Log Interval Time
+maxMP = 60							#Maximum motor Power
 
 gpsData = [0.0, -1.0, -1.0, 0.0, 0.0]						#variable to store GPS data
 bmx055data = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]	#variable to store BMX055data
@@ -72,13 +74,17 @@ def calGoal(nowLat, nowLon, goalLat, goalLon, nowAng):
 	relativeAng = relativeAng if relativeAng >= -180 else relativeAng + 360
 	return [distanceGoal, angleGoal, relativeAng]
 
-def runMotorSpeed(relativeAng):
-	mPS = int(relativeAng * (-0.7))
-	mPLeft = int(60 * (180-relativeAng)/180) + mPS
-	mPRight = int(60 * (180-relativeAng)/180) - mPS
-	mPLeft = 60 if mPLeft > 60 else mPLeft
+def runMotorSpeed(relativeAng, kp, motorPowerMax):
+	mPS = int(relativeAng * kp * (-1))	#Set Spin Component
+
+	#Set Left and Right Motor Power
+	mPLeft = int(motorPowerMax * (180-relativeAng)/180) + mPS
+	mPRight = int(motorPowerMax * (180-relativeAng)/180) - mPS
+
+	#Limited motor at motorPowerMax
+	mPLeft = motorPowerMax if mPLeft > motorPowerMax else mPLeft
 	mPLeft = 0 if mPLeft < 0 else mPLeft
-	mPRight = 60 if mPRight > 60 else mPRight
+	mPRight = motorPowerMax if mPRight > motorPowerMax else mPRight
 	mPRight = 0 if mPRight < 0 else mPRight
 	return [mPLeft, mPRight, mPS]
 
@@ -119,7 +125,7 @@ if __name__ == "__main__":
 			rAng = np.median(relAng)
 
 			#Calculate Motor Power
-			mPL, mPR, mPS = runMotorSpeed(rAng)
+			mPL, mPR, mPS = runMotorSpeed(rAng, kp, maxMP)
 
 			Motor.motor(mPL, mPR, 0.001, 1)
 
