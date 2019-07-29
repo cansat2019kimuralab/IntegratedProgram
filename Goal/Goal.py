@@ -5,11 +5,9 @@ sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/BMX055')
 sys.path.append('/home/pi/git/kimuralab/Other')
 sys.path.append('/home/pi/git/kimuralab/Detection/GoalDetection')
 import time
-import cv2
 import numpy as np
 import difflib
 import pigpio
-import binascii
 import traceback
 import BMX055
 import goal_detection
@@ -19,15 +17,13 @@ import Other
 
 def Togoal(photopath, H_min, H_max, S_thd):
 	area, GAP, photoname = goal_detection.GoalDetection(photopath, H_min, H_max, S_thd)
-	#print("GAP is",GAP)
-	#print("area is",area)
 	if area == -1 and GAP == 0:
 		Motor.motor(0, 0, 0.3)
 		return [0, ,area, GAP, photoname]
 	
 	elif area == 0 and GAP == -1:
-		Motor.motor(0, 25, 0.2, 1)
-		BMX055.bmx055_read()
+		mP = moeorPIS(-100.00, 0.7, 0.3, 0.5)
+		Motor.motor(mP, 0)
 		#Motor.motor(0, 0, 0.3)
 		#time.sleep(1)
 		return [-1, area, GAP, photoname]
@@ -54,6 +50,17 @@ def Togoal(photopath, H_min, H_max, S_thd):
 		time.sleep(1)
 		#switch 1:goal center 2:goal left 3:goal right
 		return [switch, area, GAP, photoname]
+def motorPID(spinGoal, Kp, Ki, Kd):
+		bmx055data = BMX055.bmx055_read()
+		spinZ = bmx055data[5]
+		e1 = e
+		e2 = e1
+		e = spinZ - spinGoal
+		mP = mP + Kp * (e-e1) + Ki * e + Kd * ((e-e1) - (e1-e2))
+		mP = mP if mP <= 50 else 50
+		if mP < 0:
+			mP = 20
+		return(mP)
 
 def SpeedSwitch(area):
 	if area < 5000 :
