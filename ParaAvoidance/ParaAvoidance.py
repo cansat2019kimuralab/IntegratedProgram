@@ -6,8 +6,6 @@ sys.path.append('/home/pi/git/kimuralab/Other')
 import time
 import cv2
 import numpy as np
-import difflib
-import pigpio
 import Capture
 import ParaDetection
 import Motor
@@ -24,19 +22,23 @@ if __name__ == '__main__':
 		t1 =time.time()
 	print("START: Parachute avoidance")
 	try:
-		Motor.motor(30, 30, 0.5)
-		Motor.motor(0, 0, 0.2)
-		flug, area, photoname = ParaDetection.ParaDetection(photo)
+		for i in range(2):
+			Motor.motor(30, 30, 0.5)
+			Motor.motor(0, 0, 0.2)
+			flug, area, photoname = ParaDetection.ParaDetection(photo)
 
-		if flug == 1:
-			Motor.motor(-60, -60, 5)
-			Motor.motor(0, 0, 2)
+			if flug == 1:
+				Motor.motor(-60, -60, 5)
+				Motor.motor(0, 0, 2)
 
-		if flug == 0:
-			Motor.motor(60, 50, 5)
-			Motor.motor(0 ,0, 2)
+			if flug == 0:
+				Motor.motor(60, 60, 5)
+				Motor.motor(0 ,0, 2)
 
 	except KeyboardInterrupt:
 		print("Emergency!")
 		Motor.motor_stop()
-	Motor.motor_stop()
+
+	except:
+		Motor.motor_stop()
+		print(traceback.format_exc())
