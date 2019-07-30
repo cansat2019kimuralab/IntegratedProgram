@@ -14,11 +14,57 @@ import BMX055
 import Motor
 import Other
 
+ea = 0.00
+mPa = 0.00
+ev = 0.00
+mPv = 0.00
+
+def accPID(Goal, bm, Kp, Ki, Kd, max, min):
+	bmx055data = BMX055.bmx055_read()
+	global ea, mPa
+	e1 = ea
+	e2 = e1
+	ea = bmx055data[bm] - Goal
+	mPa = mPa + Kp * (ev-e1) + Ki * e + Kd * ((ev-e1) - (e1-e2))
+	mPa = mPa if mPa <= max else max
+	if mPa < 0:
+		mPa = min
+	return mPa
+
+def velPID(Goal, vel, Kp, Ki, Kd, max, min):
+	global ev, mPv
+	e1 = ev
+	e2 = e1
+	ev = vel - Goal
+	mPv = mPv + Kp * (ev-e1) + Ki * e + Kd * ((ev-e1) - (e1-e2))
+	mPv = mPv if mPv <= max else max
+	if mPv < 0:
+		mPv = min
+	return mPv
+
+
+def culvel(fC, bm, t):
+	filterCoefficient = fC
+	lowpassValue = 0.0
+	highpassValue = 0.0
+	timeSpan = t
+	oldAccel = 0.0
+	vel = 0.0
+
+	bmx055data = BMX055.bmx055_read()
+	#lowpass
+	lowpassValue = lowpassValue * filterCoefficient + bmx055data[bm] * (1 - filterCoefficient)
+	#highpass
+	highpassValue = bmx055data[bm] - lowpassValue
+	#velcity
+	vel = ((highpassValue + oldAccel) * timeSpan) / 2 + vel
+	oldAccel = highpassValue
+	return vel
 
 if __name__ == "__main__":
 	try:
 		spinGoal = -200.00
-		mP = 0.00
+		mp = 0.00
 		e = 0.00
 		e1 = 0.00
 		e2 = 0.00
@@ -26,21 +72,18 @@ if __name__ == "__main__":
 		Ki = 0.3
 		Kd = 0.5
 		spinZ = 0
+		t1 = time.time()
+		t2 = t1
+		t = 0.1
 		while 1:
-			bmx055data = BMX055.bmx055_read()
-			spinZ = bmx055data[5]
-			e1 = e
-			e2 = e1
-			e =  spinZ - spinGoal
-			mP = mP + Kp * (e-e1) + Ki * e + Kd * ((e-e1) - (e1-e2))
-			#print(spinZ, mP)
-			mP = mP if mP <= 50 else 50
-			if mP < 0:
-				mP = 20
-			#print(spinZ, mP)
-			a = Motor.motor(mP, 0)
-			#time.sleep(0.001)
-			#print(a, mP, spinZ)
+			t = t1 - t2
+			velY = culvel(0.9, 1, t)
+			t1 =time.time()
+			mp = velPID(vStraightGoal, velY, 0.7, 0.3, 0.5, 60.0, 20.0)
+			velX = culvel(0.9, 0, t)
+			mpL = velPID(10.0, velX, 0.7, 0.3, 0.5, 20.0, 0.0)
+			Motor.motor(mp + mpL, mp, 0.3)
+			t = t1 - t2
 
 	except  KeyboardInterrupt:
 		Motor.motor_stop()
