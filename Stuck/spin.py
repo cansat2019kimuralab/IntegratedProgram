@@ -68,6 +68,11 @@ def velPID(Goal, vel, Kp, Ki, Kd, max, min):
 		mPv = min
 	return mPv
 
+def zuru(v):
+	if abs(v) < 3:
+		v =v_buf
+	v_buf = v
+	return v
 
 def culvel(fC, bm, t):
 	filterCoefficient = fC
@@ -99,8 +104,10 @@ if __name__ == "__main__":
 		t = 0.0
 		while t < 2.0:
 			velY = culvel(0.5, 1, t)
+			velY = zuru(velY)
 			#mp = velPID(vStraightGoal, velY, Kp, Ki, Kd, 60.0, 20.0)
 			velX = culvel(0.9, 0, t)
+			velX = zuru(velX)
 			#mpL = velPID(10.0, velX, Kp, Ki, Kd, 20.0, 0.0)
 			v = kalman_filter(x, P, [velX,velY])
 			print("vY",velY,"vX",velX)
