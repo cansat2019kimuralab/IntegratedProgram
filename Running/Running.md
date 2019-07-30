@@ -1,14 +1,14 @@
 # Running
 ## Running.py
-- checkGPSstatus(gps) : GPS�X�e�[�^�X�m�F�p�֐�  
-	�����@:GPS�f�[�^  
-	�߂�l�FGPS�X�e�[�^�X�i0:Status V�܂���Read GPS Error�A1:Status A)  
-- calNAng(calibrationScale, angleOffset) : ���[�o�[�������Ă���p�x���v�Z����֐�  
-	�����@�F�L�����u���[�V�����X�P�[���A�p�x�I�t�Z�b�g  
-	�߂�l�F���[�o�[�������Ă���p�x  
-- calGoal(nowLat, nowLon, goalLat, goalLon, nowAng) : �S�[���Ƃ̋����A�p�x�A���Ίp�x���v�Z����֐�  
-	�����@�F���݂̈ܓx�A�o�x�A�S�[���̈ܓx�A�o�x�A���݂̊p�x  
-	�߂�l�F�S�[���Ƃ̋����A�p�x�A���Ίp�x  
-- runMotorSpeed(relativeAng) : ���[�^�p���[���Z�o����֐�  
-	�����@�F�S�[���Ƃ̑��Ίp�x  
-	�߂�l�F���̃��[�^�p���[�A�E�̃��[�^�p���[�A���[�^�̃X�s������  
+- checkGPSstatus(gps) : GPSステータス確認用関数  
+	引数　:GPSデータ  
+	戻り値：GPSステータス（0:Status VまたはRead GPS Error、1:Status A)  
+- calNAng(calibrationScale, angleOffset) : ローバーが向いている角度を計算する関数  
+	引数　：キャリブレーションスケール、角度オフセット  
+	戻り値：ローバーが向いている角度  
+- calGoal(nowLat, nowLon, goalLat, goalLon, nowAng) : ゴールとの距離、角度、相対角度を計算する関数  
+	引数　：現在の緯度、経度、ゴールの緯度、経度、現在の角度  
+	戻り値：ゴールとの距離、角度、相対角度  
+- runMotorSpeed(relativeAng、kp, maxMotorPower) : モータパワーを算出する関数  
+	引数　：ゴールとの相対角度、比例ゲイン、モータ最大出力  
+	戻り値：左のモータパワー、右のモータパワー、モータのスピン成分  
