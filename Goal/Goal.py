@@ -25,8 +25,8 @@ def Togoal(photopath, H_min, H_max, S_thd, spinGoal, vStraightGoal):
 	
 	elif area == 0 and GAP == -1:
 		for i in range(10):
-			mP = accPID(spinGoal, 5, 0.7, 0.3, 0.5, 60.0, 20.0)
-			Motor.motor(mP, 20)
+			mp = accPID(spinGoal, 5, 0.7, 0.3, 0.5, 60.0, 20.0)
+			Motor.motor(mp, 20)
 			#Motor.motor(0, 0, 0.3)
 		
 		return [-1, area, GAP, photoname]
