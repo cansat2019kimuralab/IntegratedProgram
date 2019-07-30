@@ -25,7 +25,7 @@ def accPID(Goal, bm, Kp, Ki, Kd, max, min):
 	e1 = ea
 	e2 = e1
 	ea = bmx055data[bm] - Goal
-	mPa = mPa + Kp * (ev-e1) + Ki * e + Kd * ((ev-e1) - (e1-e2))
+	mPa = mPa + Kp * (ev-e1) + Ki * ea + Kd * ((ev-e1) - (e1-e2))
 	mPa = mPa if mPa <= max else max
 	if mPa < 0:
 		mPa = min
@@ -36,7 +36,7 @@ def velPID(Goal, vel, Kp, Ki, Kd, max, min):
 	e1 = ev
 	e2 = e1
 	ev = vel - Goal
-	mPv = mPv + Kp * (ev-e1) + Ki * e + Kd * ((ev-e1) - (e1-e2))
+	mPv = mPv + Kp * (ev-e1) + Ki * ev + Kd * ((ev-e1) - (e1-e2))
 	mPv = mPv if mPv <= max else max
 	if mPv < 0:
 		mPv = min
