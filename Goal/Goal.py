@@ -18,6 +18,7 @@ e = 0.00
 
 
 def Togoal(photopath, H_min, H_max, S_thd, spinGoal, vStraightGoal):
+	global e, mP
 	area, GAP, photoname = goal_detection.GoalDetection(photopath, H_min, H_max, S_thd)
 	if area == -1 and GAP == 0:
 		Motor.motor(0, 0, 0.3)
@@ -43,7 +44,6 @@ def Togoal(photopath, H_min, H_max, S_thd, spinGoal, vStraightGoal):
 			mpL = velPID(10.0, velX, 0.7, 0.3, 0.5, 20.0, 0.0)
 			Motor.motor(mp + mpL, mp, 0.3)
 			t = t1 - t2
-		global e, mP
 		e = 0.00
 		mP = 0.00
 		Motor.motor(0, 30, 0.1, 1)
@@ -54,7 +54,6 @@ def Togoal(photopath, H_min, H_max, S_thd, spinGoal, vStraightGoal):
 			mp = accPID(spinGoal, 5, 0.7, 0.3, 0.5, 60.0, 20.0)
 			Motor.motor(mp, 20)
 			#Motor.motor(0, 0, 0.3)
-		global e, mP
 		e = 0.00
 		mP = 0.00
 		return [-1, area, GAP, photoname]
