@@ -63,11 +63,7 @@ def culvel(fC, bm, t):
 
 if __name__ == "__main__":
 	try:
-		spinGoal = -200.00
-		mp = 0.00
-		e = 0.00
-		e1 = 0.00
-		e2 = 0.00
+		vStraightGoal = -200.00
 		Kp = 0.7
 		Ki = 0.3
 		Kd = 0.5
@@ -76,13 +72,13 @@ if __name__ == "__main__":
 		t2 = t1
 		t = 0.1
 		while 1:
-			t = t1 - t2
 			velY = culvel(0.9, 1, t)
-			t1 =time.time()
-			mp = velPID(vStraightGoal, velY, 0.7, 0.3, 0.5, 60.0, 20.0)
+			mp = velPID(vStraightGoal, velY, Kp, Ki, Kd, 60.0, 20.0)
 			velX = culvel(0.9, 0, t)
-			mpL = velPID(10.0, velX, 0.7, 0.3, 0.5, 20.0, 0.0)
-			Motor.motor(mp + mpL, mp, 0.3)
+			mpL = velPID(10.0, velX, Kp, Ki, Kd, 20.0, 0.0)
+			print("vY",velY,"vX",velX)
+			#Motor.motor(mp + mpL, mp, 0.3)
+			t1 =time.time()
 			t = t1 - t2
 
 	except  KeyboardInterrupt:
