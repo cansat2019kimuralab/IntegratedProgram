@@ -14,7 +14,7 @@
  - GAP:ゴールの中心と画像の中心との差[pixcel]  
  - photoname: 処理した写真の名前  
 ---
-##accPID(Goal, bm, Kp, Ki, max, min):  
+## accPID(Goal, bm, Kp, Ki, max, min):  
 ### 引数：
 - Goal:目標値  
 - bm:bmx055のリスト番号  
@@ -23,7 +23,7 @@
 ### 戻り値：  
 - mP:モータパワー
 ---  
-##velPID(Goal, vel, Kp, Ki, max, min):  
+## velPID(Goal, vel, Kp, Ki, max, min):  
 ### 引数：
 - Goal:目標値  
 - vel:速度  
@@ -32,7 +32,7 @@
 ### 戻り値：  
 - mP:モータパワー
 ---
-##culvel(fC, bm, t):  
+## culvel(fC, bm, t):  
 ### 引数：
 - fC:filterCoefficientρ（パスフィルタの係数）  
 - bm:bmx055のリスト番号  
