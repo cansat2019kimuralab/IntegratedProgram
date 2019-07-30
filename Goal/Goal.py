@@ -15,48 +15,34 @@ import Other
 
 mP = 0.00
 e = 0.00
-
+a = 0
 
 def Togoal(photopath, H_min, H_max, S_thd, spinGoal, vStraightGoal):
-	global e, mP
+	global e, mP, a
 	area, GAP, photoname = goal_detection.GoalDetection(photopath, H_min, H_max, S_thd)
 	if area == -1 and GAP == 0:
 		Motor.motor(0, 0, 0.3)
 		return [0, area, GAP, photoname]
 	
 	elif area == 0 and GAP == -1:
-		for i in range(10):
-			mp = accPID(spinGoal, 5, 0.7, 0.3, 0.5, 60.0, 20.0)
-			Motor.motor(mp, 20)
-			#Motor.motor(0, 0, 0.3)
-		
+		mp = accPID(spinGoal, 5, 0.7, 0.3, 0.5, 60.0, 20.0)
+		Motor.motor(mp, 20)
+		#Motor.motor(0, 0, 0.3)
+		a = 0
 		return [-1, area, GAP, photoname]
-
-	elif abs(GAP) < 60:
-		t1 = time.time()
-		t2 = t1
-		t = 0.1
-		for i in range(10):
-			velY = culvel(0.9, 1, t)
-			t1 =time.time()
-			mp = velPID(vStraightGoal, velY, 0.7, 0.3, 0.5, 60.0, 20.0)
-			velX = culvel(0.9, 0, t)
-			mpL = velPID(10.0, velX, 0.7, 0.3, 0.5, 20.0, 0.0)
-			Motor.motor(mp + mpL, mp, 0.3)
-			t = t1 - t2
-		e = 0.00
-		mP = 0.00
-		Motor.motor(0, 30, 0.1, 1)
-		return [1, area, GAP, photoname]
 
 	else:
-		for i in range(10):
-			mp = accPID(spinGoal, 5, 0.7, 0.3, 0.5, 60.0, 20.0)
-			Motor.motor(mp, 20)
-			#Motor.motor(0, 0, 0.3)
-		e = 0.00
-		mP = 0.00
-		return [-1, area, GAP, photoname]
+		if a == 0:
+			Motor.motor(0, 0, 0.1)
+			a = 1
+		if GAP > 0:
+			mp = velPID(-10.0, GAP, 0.7, 0.3, 0.5, 60, 0)
+			Motor.motor(30, mp)
+
+		else:
+			mp = velPID(-10.0, GAP, 0.7, 0.3, 0.5, 60, 0)
+			Motor.motor(mp, 30)
+		return [1, area, GAP, photoname]
 
 def accPID(Goal, bm, Kp, Ki, Kd, max, min):
 	bmx055data = BMX055.bmx055_read()
