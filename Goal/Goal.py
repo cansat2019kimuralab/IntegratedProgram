@@ -133,7 +133,7 @@ if __name__ == "__main__":
 			gpsData = GPS.readGPS()
 			goal = Togoal("photo/photo", H_min, H_max, S_thd, spinGoal, vStraightGoal)
 			print("goal flug is",goal)
-			Other.savelg("GoalLog.txt", time.time(), gpsData[1], gpsData[2], goal)
+			Other.saveLog("GoalLog.txt", time.time(), gpsData[1], gpsData[2], goal)
 			"""
 			while count < 10:
 				print(goal)
@@ -157,4 +157,5 @@ if __name__ == "__main__":
 		GPS.closeGPS()
 	except:
 		GPS.closeGPS()
+		Motor.motor_stop()
 		print(traceback.format_exc())
