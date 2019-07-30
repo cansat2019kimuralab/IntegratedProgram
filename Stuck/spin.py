@@ -116,7 +116,7 @@ if __name__ == "__main__":
 			#Motor.motor(mp + mpL, mp, 0.3)
 			t1 =time.time()
 			t = t1 - t2
-			Other.saveLog("logbmx.txt", t, BMX055.bmx055_read(), velY, velX, v[0], v[1])
+			Other.saveLog("logbmx.txt", t, BMX055.bmx055_read(), velY, velX, v[0][0], v[0][1])
 		Motor.motor(0, 0, 0.5)
 
 	except  KeyboardInterrupt:
