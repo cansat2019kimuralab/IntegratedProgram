@@ -70,14 +70,14 @@ if __name__ == "__main__":
 		spinZ = 0
 		t1 = time.time()
 		t2 = t1
-		t = 0.1
-		while 1:
+		t = 0.0
+		while t < 2.0:
 			velY = culvel(0.9, 1, t)
 			#mp = velPID(vStraightGoal, velY, Kp, Ki, Kd, 60.0, 20.0)
 			velX = culvel(0.9, 0, t)
 			#mpL = velPID(10.0, velX, Kp, Ki, Kd, 20.0, 0.0)
 			print("vY",velY,"vX",velX)
-			Motor.motor(30, 30, 2)
+			Motor.motor(30, 30)
 			#Motor.motor(mp + mpL, mp, 0.3)
 			t1 =time.time()
 			t = t1 - t2
