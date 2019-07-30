@@ -38,23 +38,30 @@ def Togoal(photopath, H_min, H_max, S_thd, spinGoal, vStraightGoal):
 		for i in range(10):
 			velY = culvel(0.9, 1, t)
 			t1 =time.time()
-			mP = velPID(vStraightGoal, velY, 0.7, 0.3, 0.5, 60.0, 20.0)
+			mp = velPID(vStraightGoal, velY, 0.7, 0.3, 0.5, 60.0, 20.0)
 			velX = culvel(0.9, 0, t)
-			mPL = velPID(10.0, velX, 0.7, 0.3, 0.5, 20.0, 0.0)
-			Motor.motor(mP + mPL, mP, 0.3)
+			mpL = velPID(10.0, velX, 0.7, 0.3, 0.5, 20.0, 0.0)
+			Motor.motor(mp + mpL, mp, 0.3)
 			t = t1 - t2
+		global e, mP
+		e = 0.00
+		mP = 0.00
 		Motor.motor(0, 30, 0.1, 1)
 		return [1, area, GAP, photoname]
 
 	else:
 		for i in range(10):
-			mP = accPID(spinGoal, 5, 0.7, 0.3, 0.5, 60.0, 20.0)
-			Motor.motor(mP, 20)
+			mp = accPID(spinGoal, 5, 0.7, 0.3, 0.5, 60.0, 20.0)
+			Motor.motor(mp, 20)
 			#Motor.motor(0, 0, 0.3)
+		global e, mP
+		e = 0.00
+		mP = 0.00
 		return [-1, area, GAP, photoname]
 
 def accPID(Goal, bm, Kp, Ki, Kd, max, min):
 	bmx055data = BMX055.bmx055_read()
+	global e, mP
 	e1 = e
 	e2 = e1
 	e = bmx055data[bm] - Goal
@@ -65,6 +72,7 @@ def accPID(Goal, bm, Kp, Ki, Kd, max, min):
 	return mP
 
 def velPID(Goal, vel, Kp, Ki, Kd, max, min):
+	global e, mP
 	e1 = e
 	e2 = e1
 	e = vel - Goal
