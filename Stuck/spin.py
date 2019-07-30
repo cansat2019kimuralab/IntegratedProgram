@@ -73,13 +73,15 @@ if __name__ == "__main__":
 		t = 0.1
 		while 1:
 			velY = culvel(0.9, 1, t)
-			mp = velPID(vStraightGoal, velY, Kp, Ki, Kd, 60.0, 20.0)
+			#mp = velPID(vStraightGoal, velY, Kp, Ki, Kd, 60.0, 20.0)
 			velX = culvel(0.9, 0, t)
-			mpL = velPID(10.0, velX, Kp, Ki, Kd, 20.0, 0.0)
+			#mpL = velPID(10.0, velX, Kp, Ki, Kd, 20.0, 0.0)
 			print("vY",velY,"vX",velX)
+			Motor.motor(30, 30, 2)
 			#Motor.motor(mp + mpL, mp, 0.3)
 			t1 =time.time()
 			t = t1 - t2
+			Other.saveLog("logbmx.txt", t, BMX055.bmx055_read(), velY, velX)
 
 	except  KeyboardInterrupt:
 		Motor.motor_stop()
