@@ -21,6 +21,46 @@ def Togoal(photopath, H_min, H_max, S_thd, spinGoal, vStraightGoal):
 	area, GAP, photoname = goal_detection.GoalDetection(photopath, H_min, H_max, S_thd)
 	if area == -1 and GAP == 0:
 		Motor.motor(0, 0, 0.3)
+		return [0, ,area, GAP, photoname]
+	
+	elif area == 0 and GAP == -1:
+		Motor.motor(-50, 50, 0.2, 1)
+		Motor.motor(0, 0, 0.3)
+		time.sleep(1)
+		return [-1, area, GAP, photoname]
+
+	else:
+		speed = SpeedSwitch(area)
+		t, switch = CurvingSwitch(GAP)
+		if switch == 1:
+			mPL = speed
+			mPR = speed
+		elif switch == 2:
+			mPL = -speed
+			mPR = speed
+		elif switch == 3:
+			mPL = speed
+			mPR = -speed
+		else:
+			print("Error")
+		Motor.motor(mPL, mPR, t, 1)
+		Motor.motor(0, 0, 0.3)
+		time.sleep(1)
+		Motor.motor(20, 20, 0.2, 1)
+		Motor.motor(0, 0, 0.3)
+		time.sleep(1)
+		#switch 1:goal center 2:goal left 3:goal right
+		return [switch, area, GAP, photoname]
+
+def SpeedSwitch(area):
+	if area < 5000 :
+		return 50
+	elif area < 10000:
+		return 40
+	else:
+		return 30 
+
+  '''
 		return [0, area, GAP, photoname]
 	
 	elif area == 0 and GAP == -1:
@@ -96,7 +136,8 @@ def culvel(fC, bm, t):
 def SpeedSwitch(area):
 	speed = -area / 1000 + 50
 	return speed 
-
+'''
+  
 def CurvingSwitch(GAP):
 	if abs(GAP) < 40:
 		t = 0.8
