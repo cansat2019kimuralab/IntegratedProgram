@@ -18,7 +18,7 @@ ea = 0.00
 mPa = 0.00
 ev = 0.00
 mPv = 0.00
-
+v_buf = 0.00
 dt = 0.1 #計測間隔
 x = np.array([[0.], [0.]]) # 初期速度を代入した「4次元状態」
 u = np.array([[0.], [0.]]) # 外部要素
@@ -69,7 +69,8 @@ def velPID(Goal, vel, Kp, Ki, Kd, max, min):
 	return mPv
 
 def zuru(v):
-	if abs(v) < 3:
+	global v_buf
+	if abs(v) < 3.:
 		v =v_buf
 	v_buf = v
 	return v
@@ -102,7 +103,7 @@ if __name__ == "__main__":
 		t1 = time.time()
 		t2 = t1
 		t = 0.0
-		while t < 2.0:
+		while t < 4.0:
 			velY = culvel(0.5, 1, t)
 			velY = zuru(velY)
 			#mp = velPID(vStraightGoal, velY, Kp, Ki, Kd, 60.0, 20.0)
@@ -111,7 +112,7 @@ if __name__ == "__main__":
 			#mpL = velPID(10.0, velX, Kp, Ki, Kd, 20.0, 0.0)
 			v = kalman_filter(x, P, [velX,velY])
 			print("vY",velY,"vX",velX)
-			Motor.motor(30, 30)
+			Motor.motor(50, 50)
 			#Motor.motor(mp + mpL, mp, 0.3)
 			t1 =time.time()
 			t = t1 - t2
