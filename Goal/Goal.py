@@ -33,24 +33,26 @@ def Togoal(photopath, H_min, H_max, S_thd, spinGoal, vStraightGoal):
 		return [0, area, GAP, photoname]
 
 	elif area == 0 and GAP == -1:
-		mp = accPID(spinGoal, 5, 0.5, 0.3, 0, 21.0, 20.0)
+		mp = accPID(spinGoal, 5, 0.7, 0.7, 0, 35.0, 30.0)
 		print("mp",mp)
-		if bomb == 0:
-			Motor.motor(mp, 0, 0.5, 2)
+		if bomb == 1:
+			Motor.motor(20, mp, 0.5, 2)
+			bomb = 1
 		else:
-			Motor.motor(0, mp, 0.5, 2)
+			Motor.motor(mp, 20, 0.5, 2)
+			bomb = 0
 
 		return [-1, area, GAP, photoname]
 
 	else:
 		if area > 0 and GAP < 0:
-			mp = velPID(-10.0, GAP, 0.5, 0.3, 0, 28, 25)
-			Motor.motor(20, mp, 0.5)
+			mp = velPID(-10.0, GAP, 0.7, 0.7, 0, 35, 30)
+			Motor.motor(30, mp, 0.5)
 			bomb = 0
 
 		elif area > 0 and GAP >= 0:
-			mp = velPID(-10.0, GAP, 0.5, 0.3, 0, 28, 25)
-			Motor.motor(mp, 20, 0.5)
+			mp = velPID(-10.0, GAP, 0.7, 0.7, 0, 35, 30)
+			Motor.motor(mp, 30, 0.5)
 			bomb = 1
 
 		else:
