@@ -15,33 +15,48 @@ import Other
 
 mP = 0.00
 e = 0.00
-a = 0
+bomb = 0
 
 def Togoal(photopath, H_min, H_max, S_thd, spinGoal, vStraightGoal):
-	global e, mP, a
+	global e, mP, bomb
+	Motor.motor(0,0,0.2)
+	time.sleep(0.2)
+	Motor.motor(20,20,0.2)
+	Motor.motor(0,0,0.2)
 	area, GAP, photoname = goal_detection.GoalDetection(photopath, H_min, H_max, S_thd)
+	print("GAP",GAP)
+	print("bomb",bomb)
+	print("area",area)
 	if area == -1 and GAP == 0:
-		Motor.motor(0, 0, 0.3)
+		Motor.motor(30, 30, 0.3)
+		Motor.motor(0, 0, 3)
 		return [0, area, GAP, photoname]
-	
+
 	elif area == 0 and GAP == -1:
-		mp = accPID(spinGoal, 5, 0.7, 0.3, 0.5, 60.0, 20.0)
-		Motor.motor(mp, 20)
-		#Motor.motor(0, 0, 0.3)
-		a = 0
+		mp = accPID(spinGoal, 5, 0.5, 0.3, 0, 21.0, 20.0)
+		print("mp",mp)
+		if bomb == 0:
+			Motor.motor(mp, 0, 0.5, 2)
+		else:
+			Motor.motor(0, mp, 0.5, 2)
+
 		return [-1, area, GAP, photoname]
 
 	else:
-		if a == 0:
-			Motor.motor(0, 0, 0.1)
-			a = 1
-		if GAP > 0:
-			mp = velPID(-10.0, GAP, 0.7, 0.3, 0.5, 60, 0)
-			Motor.motor(30, mp)
+		if area > 0 and GAP < 0:
+			mp = velPID(-10.0, GAP, 0.5, 0.3, 0, 28, 25)
+			Motor.motor(20, mp, 0.5)
+			bomb = 0
+
+		elif area > 0 and GAP >= 0:
+			mp = velPID(-10.0, GAP, 0.5, 0.3, 0, 28, 25)
+			Motor.motor(mp, 20, 0.5)
+			bomb = 1
 
 		else:
-			mp = velPID(-10.0, GAP, 0.7, 0.3, 0.5, 60, 0)
-			Motor.motor(mp, 30)
+			print("error")
+			return [-1, area, GAP, photoname]
+
 		return [1, area, GAP, photoname]
 
 def accPID(Goal, bm, Kp, Ki, Kd, max, min):
@@ -51,6 +66,7 @@ def accPID(Goal, bm, Kp, Ki, Kd, max, min):
 	e2 = e1
 	e = bmx055data[bm] - Goal
 	mP = mP + Kp * (e-e1) + Ki * e + Kd * ((e-e1) - (e1-e2))
+	print("bmx",bmx055data[bm])
 	mP = mP if mP <= max else max
 	if mP < 0:
 		mP = min
@@ -135,6 +151,7 @@ if __name__ == "__main__":
 				print("runningGPS again")
 				break
 			"""
+		Motor.motor_stop()
 		GPS.closeGPS()
 
 	except KeyboardInterrupt:
