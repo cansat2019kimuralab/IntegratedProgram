@@ -19,10 +19,10 @@ bomb = 0
 H_min = 200
 H_max = 10
 S_thd = 120
-Kp = 0.7
+Kp = 0.2
 Ki = 0.5
 Kd = 0.3
-mpL = 0
+mpL = 10
 mpH = 30
 
 def Togoal(photopath, H_min, H_max, S_thd, Kp, Ki, Kd, mpL, mpH):
@@ -42,23 +42,24 @@ def Togoal(photopath, H_min, H_max, S_thd, Kp, Ki, Kd, mpL, mpH):
 
 	elif area == 0 and GAP == -1:
 		if bomb == 1:
-			Motor.motor(mpL, mpH, 0.3, 2)
+			Motor.motor(mpH, mpL, 0.5, 2)
 			bomb = 1
 		else:
-			Motor.motor(mpH, mpL, 0.3, 2)
+			Motor.motor(mpL, mpH + 5, 0.5, 2)
 			bomb = 0
 
 		return [-1, area, GAP, photoname]
 
 	else:
-		MP = velPID(10.0, GAP, Kp, Ki, Kd, mpH + 5, mpH)
-		print("MP =",MP)
+		#print("MP =",MP)
 		if area > 0 and GAP < 0:
-			Motor.motor(mpH, MP, 0.5, 2)
-			bomb = 0
-		elif area > 0 and GAP >= 0:
-			Motor.motor(MP, mpH, 0.5, 2)
+			MP = velPID(0.0, GAP, Kp, Ki, Kd, mpH + 10, mpH + 5)
+			Motor.motor(mpH, MP, 1.0, 2)
 			bomb = 1
+		elif area > 0 and GAP >= 0:
+			MP = velPID(0.0, GAP, Kp, Ki, Kd, mpH + 1, mpH)
+			Motor.motor(MP, mpH, 1.0, 2)
+			bomb = 0
 		else:
 			print("error")
 			return [-1, area, GAP, photoname]
@@ -109,7 +110,7 @@ def culvel(fC, bm, t):
 		
 if __name__ == "__main__":
 	try:
-		global H_min, H_max, S_thd, Kp, Ki, Kd, mpL, mpH
+		#global H_min, H_max, S_thd, Kp, Ki, Kd, mpL, mpH
 		GPS.openGPS()
 		BMX055.bmx055_setup()
 		goal = Togoal("photo/photo", H_min, H_max, S_thd, Kp, Ki, Kd, mpL, mpH)

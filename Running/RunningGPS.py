@@ -68,14 +68,15 @@ def calNAng(calibrationScale, angleOffset):
 	return nowAng
 
 def calGoal(nowLat, nowLon, goalLat, goalLon, nowAng):
-	distanceGoal, angleGoal = GPS.Cal_RhoAng(nowLat, nowLon, goalLat, goalLon)
+	#distanceGoal, angleGoal = GPS.Cal_RhoAng(nowLat, nowLon, goalLat, goalLon)
+	distanceGoal, angleGoal = GPS.vincentyInverse(nowLat, nowLon, goalLat, goalLon)
 	relativeAng = angleGoal - nowAng
 	relativeAng = relativeAng if relativeAng <= 180 else relativeAng - 360
 	relativeAng = relativeAng if relativeAng >= -180 else relativeAng + 360
 	return [distanceGoal, angleGoal, relativeAng]
 
 def runMotorSpeed(relativeAng, kp, motorPowerMax):
-	mPS = int(relativeAng * kp * (-1))	#Set Spin Component
+	mPS = int(relativeAng * kp * (-0.9))	#Set Spin Component
 
 	#Set Left and Right Motor Power
 	mPLeft = int(motorPowerMax * (180-relativeAng)/180) + mPS
