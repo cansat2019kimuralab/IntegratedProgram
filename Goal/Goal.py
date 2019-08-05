@@ -16,8 +16,16 @@ import Other
 mP = 0.00
 e = 0.00
 bomb = 0
+H_min = 200
+H_max = 10
+S_thd = 120
+Kp = 0.7
+Ki = 0.5
+Kd = 0.3
+mpL = 0
+mpH = 30
 
-def Togoal(photopath, H_min, H_max, S_thd, spinGoal, vStraightGoal):
+def Togoal(photopath, H_min, H_max, S_thd, Kp, Ki, Kd, mpL, mpH):
 	global e, mP, bomb
 	Motor.motor(0,0,0.2)
 	time.sleep(0.2)
@@ -33,26 +41,24 @@ def Togoal(photopath, H_min, H_max, S_thd, spinGoal, vStraightGoal):
 		return [0, area, GAP, photoname]
 
 	elif area == 0 and GAP == -1:
-		mp = accPID(spinGoal, 5, 0.5, 0.3, 0, 21.0, 20.0)
-		print("mp",mp)
-		if bomb == 0:
-			Motor.motor(mp, 0, 0.5, 2)
+		if bomb == 1:
+			Motor.motor(mpL, mpH, 0.3, 2)
+			bomb = 1
 		else:
-			Motor.motor(0, mp, 0.5, 2)
+			Motor.motor(mpH, mpL, 0.3, 2)
+			bomb = 0
 
 		return [-1, area, GAP, photoname]
 
 	else:
+		MP = velPID(10.0, GAP, Kp, Ki, Kd, mpH + 5, mpH)
+		print("MP =",MP)
 		if area > 0 and GAP < 0:
-			mp = velPID(-10.0, GAP, 0.5, 0.3, 0, 28, 25)
-			Motor.motor(20, mp, 0.5)
+			Motor.motor(mpH, MP, 0.5, 2)
 			bomb = 0
-
 		elif area > 0 and GAP >= 0:
-			mp = velPID(-10.0, GAP, 0.5, 0.3, 0, 28, 25)
-			Motor.motor(mp, 20, 0.5)
+			Motor.motor(MP, mpH, 0.5, 2)
 			bomb = 1
-
 		else:
 			print("error")
 			return [-1, area, GAP, photoname]
@@ -83,7 +89,6 @@ def velPID(Goal, vel, Kp, Ki, Kd, max, min):
 		mP = min
 	return mP
 
-
 def culvel(fC, bm, t):
 	filterCoefficient = fC
 	lowpassValue = 0.0
@@ -101,42 +106,21 @@ def culvel(fC, bm, t):
 	vel = ((highpassValue + oldAccel) * timeSpan) / 2 + vel
 	oldAccel = highpassValue
 	return vel
-
-def SpeedSwitch(area):
-	speed = -area / 1000 + 50
-	return speed 
-
-def CurvingSwitch(GAP):
-	if abs(GAP) < 40:
-		t = 0.8
-		return [t, 1]
-	elif abs(GAP) < 70:
-		t = 0.06
-	else:
-		t = 0.1
-	if GAP > 0:
-		return [t, 3]
-	else:
-		return [t, 2]
 		
 if __name__ == "__main__":
 	try:
+		global H_min, H_max, S_thd, Kp, Ki, Kd, mpL, mpH
 		GPS.openGPS()
 		BMX055.bmx055_setup()
-		count = 0
-		ahh = 0
-		H_min = 200
-		H_max = 10
-		S_thd = 120
-		spinGoal = -50.00
-		vStraightGoal = 10.00
-		goal = Togoal("photo/photo", H_min, H_max, S_thd, spinGoal ,vStraightGoal)
+		goal = Togoal("photo/photo", H_min, H_max, S_thd, Kp, Ki, Kd, mpL, mpH)
 		while goal[0] != 0:
 			gpsData = GPS.readGPS()
-			goal = Togoal("photo/photo", H_min, H_max, S_thd, spinGoal, vStraightGoal)
+			goal = Togoal("photo/photo", H_min, H_max, S_thd, Kp, Ki, Kd, mpL, mpH)
 			print("goal flug is",goal)
 			Other.saveLog("GoalLog.txt", time.time(), gpsData[1], gpsData[2], goal)
 			"""
+			count = 0
+			ahh = 0
 			while count < 10:
 				print(goal)
 				goal = Togoal("photo", H_min, H_max, S_thd)
