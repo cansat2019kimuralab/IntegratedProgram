@@ -16,20 +16,20 @@ import Motor
 stuck = 0
 
 def stuckDetection():
-    stuck = 0
-    bmx055data = BMX055.bmx055_read()
+	stuck = 0
+	bmx055data = BMX055.bmx055_read()
 
-    if(math.fabs(bmx055data[0]) > 1.0):
-        stuck = 1
+	if(math.fabs(bmx055data[0]) > 2.0):
+		stuck = 1
 
-    # --- Return Value --- #
-    #   1: roll over
-    return stuck
+	# --- Return Value --- #
+	#   1: roll over
+	return stuck
 
 def stuckEscape(mode = 0):
-    # --- Mode --- #
-    #   1 : Roll Over
-    if(mode == 1):
+	# --- Mode --- #
+	#   1 : Roll Over
+	if(mode == 1):
 		flug = 0
 		count = 0
 		while flug <= 5:
@@ -48,13 +48,13 @@ def stuckEscape(mode = 0):
 			else:
 				flug = 0		#Roll Over
 			count = count - 1 
-        Motor.motor(0, 0, 2)
-    else:
-        pass   
+		Motor.motor(0, 0, 2)
+	else:
+		pass   
 
 if __name__ == "__main__":
 	try:
-        print(stuckDetection())
+		print(stuckDetection())
 	except:
 		Motor.motor(0, 0, 2)
 		Motor.motor_stop()
