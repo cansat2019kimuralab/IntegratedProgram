@@ -60,7 +60,7 @@ def Togoal(photopath, H_min, H_max, S_thd, Kp, Ki, Kd, mpL, mpH):
 		elif area < 10000 and area > 0 and GAP >= 0:
 			#MP = velPID(0.0, GAP, Kp, Ki, Kd, mpH + 10, mpH)
 			MP = curvingSwitch(GAP,10)
-			Motor.motor(mpH + MP, mpHL, 0.5)
+			Motor.motor(mpH + MP, mpH, 0.5)
 			bomb = 0
 		elif area >= 10000 and GAP < 0:
 			MP = curvingSwitch(GAP,10)
