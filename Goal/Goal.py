@@ -13,24 +13,24 @@ import Motor
 import GPS
 import Other
 
-mP = 0.00
-e = 0.00
-bomb = 0
-H_min = 200
-H_max = 10
-S_thd = 120
-Kp = 0.2
-Ki = 0.5
-Kd = 0.3
-mpL = 10
-mpH = 30
+mP = 0.00	#motor power for PID
+e = 0.00	#error for PID
+bomb = 0	#flug for rotation
+H_min = 200	#Hue minimam
+H_max = 10	#Hue maximam
+S_thd = 120	#Saturation threshold
+Kp = 0.9	#Gain proportional
+Ki = 0.9	#Gain integer
+Kd = 0.1	#Gain differential
+mpL = 10	#motor power for Low level
+mpH = 30	#motor power fot High level
 
 def Togoal(photopath, H_min, H_max, S_thd, Kp, Ki, Kd, mpL, mpH):
 	global e, mP, bomb
 	Motor.motor(0,0,0.2)
-	time.sleep(0.2)
 	Motor.motor(20,20,0.2)
 	Motor.motor(0,0,0.2)
+	time.sleep(0.5)
 	area, GAP, photoname = goal_detection.GoalDetection(photopath, H_min, H_max, S_thd)
 	print("GAP",GAP)
 	print("bomb",bomb)
@@ -42,7 +42,7 @@ def Togoal(photopath, H_min, H_max, S_thd, Kp, Ki, Kd, mpL, mpH):
 
 	elif area == 0 and GAP == -1:
 		if bomb == 1:
-			Motor.motor(mpH, mpL, 0.5, 2)
+			Motor.motor(mpH, mpL +5, 0.5, 2)
 			bomb = 1
 		else:
 			Motor.motor(mpL, mpH + 5, 0.5, 2)
@@ -51,14 +51,13 @@ def Togoal(photopath, H_min, H_max, S_thd, Kp, Ki, Kd, mpL, mpH):
 		return [-1, area, GAP, photoname]
 
 	else:
-		#print("MP =",MP)
 		if area > 0 and GAP < 0:
-			MP = velPID(0.0, GAP, Kp, Ki, Kd, mpH + 10, mpH + 5)
-			Motor.motor(mpH, MP, 1.0, 2)
+			MP = velPID(0.0, GAP, Kp, Ki, Kd, mpH + 5, mpL + 5)
+			Motor.motor(mpL, MP, 1.0, 2)
 			bomb = 1
 		elif area > 0 and GAP >= 0:
-			MP = velPID(0.0, GAP, Kp, Ki, Kd, mpH + 1, mpH)
-			Motor.motor(MP, mpH, 1.0, 2)
+			MP = velPID(0.0, GAP, Kp, Ki, Kd, mpH, mpL)
+			Motor.motor(MP, mpL, 1.0, 2)
 			bomb = 0
 		else:
 			print("error")
@@ -110,7 +109,6 @@ def culvel(fC, bm, t):
 		
 if __name__ == "__main__":
 	try:
-		#global H_min, H_max, S_thd, Kp, Ki, Kd, mpL, mpH
 		GPS.openGPS()
 		BMX055.bmx055_setup()
 		goal = Togoal("photo/photo", H_min, H_max, S_thd, Kp, Ki, Kd, mpL, mpH)
