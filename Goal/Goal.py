@@ -23,13 +23,13 @@ Kp = 0.8	#Gain proportional
 Ki = 0.7	#Gain integer
 Kd = 0.3	#Gain differential
 mp_min = 10	#motor power for Low level
-mp_max = 30	#motor power fot High level
-mp_adj = 2		#adjust motor power
+mp_max = 40	#motor power fot High level
+mp_adj = -2		#adjust motor power
 
 def Togoal(photopath, H_min, H_max, S_thd, mp_min, mp_max, mp_adj):
 	global e, mP, bomb
 	Motor.motor(0,0,0.3)
-	Motor.motor(30,30,0.1)
+	Motor.motor(30,30,0.3)
 	Motor.motor(0,0,0.3)
 	time.sleep(0.5)
 	area, GAP, photoname = goal_detection.GoalDetection(photopath, H_min, H_max, S_thd)
@@ -43,10 +43,10 @@ def Togoal(photopath, H_min, H_max, S_thd, mp_min, mp_max, mp_adj):
 
 	elif area == 0 and GAP == -1:
 		if bomb == 1:
-			Motor.motor(mp_max, mp_min + mp_adj, 0.5, 2)
+			Motor.motor(mp_max, mp_min + mp_adj, 0.5)
 			bomb = 1
 		else:
-			Motor.motor(mp_min, mp_max + mp_adj, 0.5, 2)
+			Motor.motor(mp_min, mp_max + mp_adj, 0.5)
 			bomb = 0
 
 		return [-1, area, GAP, photoname]
@@ -96,7 +96,7 @@ def curvingSwitch(GAP, add):
 		return add*0.3
 	elif abs(GAP) > 16:
 		return add*0.2
-	elif abs(GAP) > 0:
+	elif abs(GAP) >= 0:
 		return 0
 
 
@@ -106,7 +106,7 @@ if __name__ == "__main__":
 		GPS.openGPS()
 		BMX055.bmx055_setup()
 		goal = Togoal("photo/photo", H_min, H_max, S_thd, mp_min, mp_max, mp_adj)
-		while goal[0] != 0:
+		while goalFlug != 0:
 			gpsData = GPS.readGPS()
 			goalFlug, goalArea, goalGAP, photoName  = Togoal("photo/photo", H_min, H_max, S_thd, mp_min, mp_max, mp_adj)
 			print("goal flug is",goal)
