@@ -37,7 +37,7 @@ def Togoal(photopath, H_min, H_max, S_thd, mp_min, mp_max, mp_adj):
 	print("bomb",bomb)
 	print("area",area)
 	if area == -1 and GAP == 0:
-		Motor.motor(30, 30 + mp_adj, 0.3)
+		Motor.motor(40, 40 + mp_adj, 1.5)
 		Motor.motor(0, 0, 3)
 		return [0, area, GAP, photoname]
 
@@ -53,15 +53,15 @@ def Togoal(photopath, H_min, H_max, S_thd, mp_min, mp_max, mp_adj):
 
 	else:
 		if area < 10000 and area > 0 and GAP < 0:
-			MP = curvingSwitch(GAP,10)
+			MP = curvingSwitch(GAP,15)
 			Motor.motor(mp_max, mp_max + MP + mp_adj, 0.5)
 			bomb = 1
 		elif area < 10000 and area > 0 and GAP >= 0:
-			MP = curvingSwitch(GAP,10)
+			MP = curvingSwitch(GAP,adj_add)
 			Motor.motor(mp_max + MP, mp_max + mp_adj, 0.5)
 			bomb = 0
 		elif area >= 10000 and GAP < 0:
-			MP = curvingSwitch(GAP,10)
+			MP = curvingSwitch(GAP,15)
 			Motor.motor(mp_min, mp_max + MP + mp_adj, 0.3)
 			bomb = 1
 
