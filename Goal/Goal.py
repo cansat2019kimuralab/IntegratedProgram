@@ -113,9 +113,9 @@ goalRelativeAng = 0
 t = 0
 timeout_calibration = 180	#time for calibration timeout
 areaSamp = 10000
-LSamp = 0.3
-GAPSamp = 50
-xSamp = 0.1
+LSamp = 1.0
+GAPSamp = 140
+xSamp = 0.4
 
 calibrationLog = 	"/home/pi/log/calibrationLog"
 goalDetectionLog =	"/home/pi/log/goalDetectionLog.txt"
