@@ -198,7 +198,9 @@ def curvingSwitch(GAP, add):
 
 def calR2G(nowArea, nowGAP, SampArea, SampL, SampX, SampGAP):
 	nowL = SampL*math.sqrt(SampArea)/math.sqrt(nowArea)
+	print("nowL",nowL)
 	nowX = SampX * math.sqrt(nowL**2 - nowGAP**2) / math.sqrt(SampL**2 + SampGAP**2) * nowGAP / SampGAP
+	print("nowX",nowX)
 	angR2G = math.degrees(math.asin(nowX/nowL))
 	return [nowL, angR2G]
 
@@ -221,7 +223,7 @@ if __name__ == "__main__":
 				t = time.time()
 
 			Motor.motor(0,0,0.5)
-			Motor.motor(30,30,0.3)
+			Motor.motor(15,15,0.3)
 			Motor.motor(0,0,0.3)
 			#-----------------get information-----------------#
 			goalFlug, goalArea, goalGAP, photoName = goal_detection.GoalDetection(photopath, H_min, H_max, S_thd)
