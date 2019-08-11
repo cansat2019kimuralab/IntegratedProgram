@@ -125,69 +125,6 @@ goalDetectionLog =	"/home/pi/log/goalDetectionLog.txt"
 captureLog = 		"/home/pi/log/captureLog.txt"
 photopath = 		"/home/pi/photo/photo"
 
-"""
-def Togoal(photopath, H_min, H_max, S_thd, mp_min, mp_max, mp_adj):
-	global e, mP, bomb, nAng, ellipseScale
-	Motor.motor(0,0,0.3)
-	Motor.motor(30,30,0.3)
-	Motor.motor(0,0,0.3)
-	area, GAP, photoname = goal_detection.GoalDetection(photopath, H_min, H_max, S_thd)
-	print("GAP",GAP)
-	print("bomb",bomb)
-	print("area",area)	
-	nAng = RunningGPS.calAng(ellipseScale, angOffset)
-	if area == -1 and GAP == 0:
-		Motor.motor(40, 40 + mp_adj, 1.5)
-		Motor.motor(0, 0, 3)
-		return [0, area, GAP, photoname, nAng]
-
-	elif area == 0 and GAP == -1:
-		if bomb == 1:
-			Motor.motor(mp_max, mp_min + mp_adj, 0.5)
-			bomb = 1
-		else:
-			Motor.motor(mp_min, mp_max + mp_adj, 0.5)
-			bomb = 0
-
-		return [-1, area, GAP, photoname, nAng]
-
-	else:
-		if area < 10000 and area > 0 and GAP < 0:
-			MP = curvingSwitch(GAP,15)
-			Motor.motor(mp_max, mp_max + MP + mp_adj, 0.5)
-			bomb = 1
-		elif area < 10000 and area > 0 and GAP >= 0:
-			MP = curvingSwitch(GAP,15)
-			Motor.motor(mp_max + MP, mp_max + mp_adj, 0.5)
-			bomb = 0
-		elif area >= 10000 and GAP < 0:
-			MP = curvingSwitch(GAP,15)
-			Motor.motor(mp_min, mp_max + MP + mp_adj, 0.3)
-			bomb = 1
-
-		elif area >= 10000 and GAP >= 0:
-			MP = curvingSwitch(GAP,10)
-			Motor.motor(mp_max + MP, mp_min + mp_adj, 0.3)
-			bomb = 0
-
-		else:
-			print("error")
-			return [-1, area, GAP, photoname, nAng]
-		print('MP',MP)
-
-		return [1, area, GAP, photoname, nAng]
-"""
-def velPID(Goal, vel, Kp, Ki, Kd, max, min):
-	global e, mP
-	e1 = e
-	e2 = e1
-	e = vel - Goal
-	mP = mP + Kp * (e-e1) *0.2 + Ki * e * 0.2 + Kd * ((e-e1) - (e1-e2)) * 0.2
-	mP = mP if mP <= max else max
-	if mP < 0:
-		mP = min
-	return mP
-
 def curvingSwitch(GAP, add):
 	if abs(GAP) > 144:
 		return add
@@ -250,8 +187,7 @@ if __name__ == "__main__":
 			#--------------------goal---------------------#
 			if goalFlug == 0:
 				Motor.motor(40, 40 + mp_adj, 1.5)
-				Motor.motor(0, 0, 3)
-				
+				Motor.motor(0, 0, 3)				
 			#------------------not detect----------------------#
 			elif goalFlug == -1:
 				goalBufAng = goalnowAng
@@ -263,6 +199,7 @@ if __name__ == "__main__":
 					bomb = 0
 			#---------------detect but no goal-------------#
 			else:
+				#-----------------target left------------------#
 				if goalArea < 10000 and goalArea > 0 and goalGAP < 0:
 					LR2G, angR2G = calR2G(goalArea, goalGAP, areaSamp, LSamp, xSamp, GAPSamp)
 					goalBufAng = RunningGPS.calNAng(ellipseScale, angOffset)
@@ -270,38 +207,27 @@ if __name__ == "__main__":
 					while time.time() - tbomb < 4:
 						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
 						goalRelativeAng = angR2G + goalBufAng - goalnowAng
+						goalRelativeAng = goalRelativeAng if goalRelativeAng <= 180 else goalRelativeAng - 360
+						goalRelativeAng = goalRelativeAng if goalRelativeAng >= -180 else goalRelativeAng + 360
 						print("goalRelativeAng",goalRelativeAng)
-						print('ang', goalnowAng - goalBufAng)
-						mPL, mPR, mPS = RunningGPS.runMotorSpeed(-goalRelativeAng, Gkp, mp_max)
+						print('difang', goalnowAng - goalBufAng)
+						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
 						Motor.motor(mPL, mPR, 0.001, 1)
 						print("mPL",mPL,"mPR",mPR)
-						#if goalRelativeAng > 0:
-							#MP = velPID(0, goalRelativeAng, 0.4, 0.3, 0, 40, 0)
-							#Motor.motor(0, MP, 0.001, 1)
-						#else:
-							#MP = velPID(0, -goalRelativeAng, 0.4, 0.3, 0, 40, 0)
-							#Motor.motor(MP, 0, 0.001, 1)
-						#print('MP',MP)
 					Motor.motor(0, 0, 0.5)
 					bomb = 1
+				#----------------------target right------------------------#
 				elif goalArea < 10000 and goalArea > 0 and goalGAP >= 0:
 					LR2G, angR2G = calR2G(goalArea, goalGAP, areaSamp, LSamp, xSamp, GAPSamp)
 					tbomb = time.time()
 					while time.time() - tbomb < 4:
 						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
-						goalRelativeAng = angR2G + goalBufAng - goalnowAng
+						goalRelativeAng = -angR2G + goalBufAng - goalnowAng
 						print("goalRelativeAng",goalRelativeAng)
-						print('ang', goalnowAng - goalBufAng)
-						mPL, mPR, mPS = RunningGPS.runMotorSpeed(-goalRelativeAng, Gkp, mp_max)
+						print('difang', goalnowAng - goalBufAng)
+						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
 						print("mPL",mPL,"mPR",mPR)
 						Motor.motor(mPL, mPR, 0.001, 1)
-						#if goalRelativeAng > 0:
-							#MP = velPID(0, goalRelativeAng, 0.4, 0.3, 0, 40, 0)
-							#Motor.motor(0, MP, 0.001, 1)
-						#else:
-							#MP = velPID(0, -goalRelativeAng, 0.4, 0.3, 0, 40, 0)
-							#Motor.motor(MP, 0, 0.001, 1)
-						#print('MP',MP)
 					Motor.motor(0, 0, 0.5)
 					bomb = 0
 				elif goalArea >= 10000 and goalGAP < 0:
