@@ -114,6 +114,8 @@ t = 0
 timeout_calibration = 180	#time for calibration timeout
 areaSamp = 10000
 LSamp = 0.3
+GAPSamp = 50
+xSamp = 50
 
 calibrationLog = 	"/home/pi/log/calibrationLog"
 goalDetectionLog =	"/home/pi/log/goalDetectionLog.txt"
@@ -194,9 +196,10 @@ def curvingSwitch(GAP, add):
 	elif abs(GAP) >= 0:
 		return 0
 
-def calR2G(nowArea, nowGAP, SampArea, SampL):
+def calR2G(nowArea, nowGAP, SampArea, SampL, SampX, SampGAP):
 	nowL = SampL*math.sqrt(SampArea)/math.sqrt(nowArea)
-	angR2G = math.degrees(math.asin(nowGAP/nowL))
+	nowX = SampX * math.sqrt(nowGAP**2 + nowL**2) / math.sqrt(SampGAP**2 + SampL**2) * nowGAP / SampGAP
+	angR2G = math.degrees(math.asin(nowX/nowL))
 	return [nowL, angR2G]
 
 if __name__ == "__main__":
@@ -246,25 +249,23 @@ if __name__ == "__main__":
 				if goalArea < 10000 and goalArea > 0:
 					tbomb = time.time()
 					while time.time() - tbomb < 3:
-						LR2G, angR2G = calR2G(goalArea, goalGAP, areaSamp, LSamp)
+						LR2G, angR2G = calR2G(goalArea, goalGAP, areaSamp, LSamp, xSamp, GAPSamp)
 						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
 						Motor.motor(mPL, mPR, 0.001, 1)
 						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
 						goalRelativeAng = angR2G + goalBufAng - goalnowAng
 					Motor.motor(0, 0, 0.5)
 					bomb = 1
-				"""
 				elif goalArea < 10000 and goalArea > 0 and goalGAP >= 0:
 					tbomb = time.time()
 					while time.time() - tbomb < 3:
-						LR2G, angR2G = calR2G(goalArea, goalGAP, areaSamp, LSamp)
+						LR2G, angR2G = calR2G(goalArea, goalGAP, areaSamp, LSamp, xSamp, GAPSamp)
 						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
 						Motor.motor(mPL, mPR, 0.001, 1)
 						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
 						goalRelativeAng = angR2G + goalBufAng - goalnowAng
 					Motor.motor(0, 0, 0.5)
 					bomb = 0
-				"""
 				elif goalArea >= 10000 and goalGAP < 0:
 					MP = curvingSwitch(goalGAP,10)
 					Motor.motor(mp_min, mp_max + MP + mp_adj, 0.3)
