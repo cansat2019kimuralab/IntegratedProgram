@@ -147,9 +147,10 @@ if __name__ == "__main__":
 			Motor.motor(0,0,0.3)
 			#-----------------get information-----------------#
 			goalFlug, goalArea, goalGAP, photoName = goal_detection.GoalDetection(photopath, H_min, H_max, S_thd)
-			print("GAP",GAP)
+			print("GAP",goalGAP)
 			print("bomb",bomb)
-			print("area",area)	
+			print("area",goalArea)
+			print("flug",goalFlug)	
 			goalnowAng = RunningGPS.calAng(ellipseScale, angOffset)
 			#--------------------goal---------------------#
 			if goalFlug == 0:
