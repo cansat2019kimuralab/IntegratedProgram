@@ -117,6 +117,9 @@ LSamp = 1.0
 GAPSamp = 140
 xSamp = 0.4
 
+e = 0
+mP = 0
+
 calibrationLog = 	"/home/pi/log/calibrationLog"
 goalDetectionLog =	"/home/pi/log/goalDetectionLog.txt"
 captureLog = 		"/home/pi/log/captureLog.txt"
@@ -174,6 +177,17 @@ def Togoal(photopath, H_min, H_max, S_thd, mp_min, mp_max, mp_adj):
 
 		return [1, area, GAP, photoname, nAng]
 """
+def velPID(Goal, vel, Kp, Ki, Kd, max, min):
+	global e, mP
+	e1 = e
+	e2 = e1
+	e = vel - Goal
+	mP = mP + Kp * (e-e1) + Ki * e + Kd * ((e-e1) - (e1-e2))
+	mP = mP if mP <= max else max
+	if mP < 0:
+		mP = min
+	return mP
+
 def curvingSwitch(GAP, add):
 	if abs(GAP) > 144:
 		return add
@@ -257,8 +271,9 @@ if __name__ == "__main__":
 						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
 						goalRelativeAng = angR2G + goalBufAng - goalnowAng
 						print("goalRelativeAng",goalRelativeAng)
-						mPL, mPR, mPS = RunningGPS.runMotorSpeed(-goalRelativeAng, Gkp, mp_max)
-						Motor.motor(mPL, mPR, 0.001, 1)
+						#mPL, mPR, mPS = RunningGPS.runMotorSpeed(-goalRelativeAng, Gkp, mp_max)
+						MP = velPID(0, goalRelativeAng, 0.5, 0.3, 0, 40, -20)
+						Motor.motor(0, MP, 0.001, 1)
 					Motor.motor(0, 0, 0.5)
 					bomb = 1
 				elif goalArea < 10000 and goalArea > 0 and goalGAP >= 0:
@@ -268,8 +283,9 @@ if __name__ == "__main__":
 						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
 						goalRelativeAng = angR2G + goalBufAng - goalnowAng
 						print("goalRelativeAng",goalRelativeAng)
-						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
-						Motor.motor(mPL, mPR, 0.001, 1)
+						#mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
+						MP = velPID(0, goalRelativeAng, 0.5, 0.3, 0, 40, -20)
+						Motor.motor(0, MP, 0.001, 1)
 					Motor.motor(0, 0, 0.5)
 					bomb = 0
 				elif goalArea >= 10000 and goalGAP < 0:
