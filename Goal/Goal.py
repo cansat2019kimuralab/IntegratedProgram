@@ -113,7 +113,7 @@ goalRelativeAng = 0
 t = 0
 timeout_calibration = 180	#time for calibration timeout
 areaSamp = 10000
-dSamp = 0.3
+LSamp = 0.3
 
 calibrationLog = 	"/home/pi/log/calibrationLog"
 goalDetectionLog =	"/home/pi/log/goalDetectionLog.txt"
@@ -236,35 +236,35 @@ if __name__ == "__main__":
 			elif goalFlug == -1:
 				goalBufAng = goalnowAng
 				if bomb == 1:
-					tbomb = time.time()
-					while time.time() - tbomb < 3:
-						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
-						Motor.motor(mPL, mPR, 0.001, 1)
-						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
-						goalRelativeAng = -60 + goalBufAng - goalnowAng
-					Motor.motor(0, 0, 0.5)
-					goalBufAng = goalnowAng
+					Motor.motor(mp_max, mp_min + mp_adj, 0.5)
 					bomb = 1
 				else:
-					tbomb = time.time()
-					while time.time() - tbomb < 3:
-						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
-						Motor.motor(mPL, mPR, 0.001, 1)
-						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
-						goalRelativeAng = 60 - goalBufAng + goalnowAng
-					Motor.motor(0, 0, 0.5)
-					goalBufAng = goalnowAng
+					Motor.motor(mp_min, mp_max + mp_adj, 0.5)	
 					bomb = 0
 			#---------------detect but no goal-------------#
 			else:
-				if goalArea < 10000 and goalArea > 0 and goalGAP < 0:
-					MP = curvingSwitch(goalGAP,15)
-					Motor.motor(mp_max, mp_max + MP + mp_adj, 0.5)
+				if goalArea < 10000 and goalArea > 0:
+					tbomb = time.time()
+					while time.time() - tbomb < 3:
+						LR2G, angR2G = calR2G(goalArea, goalGAP, areaSamp, LSamp)
+						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
+						Motor.motor(mPL, mPR, 0.001, 1)
+						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
+						goalRelativeAng = angR2G + goalBufAng - goalnowAng
+					Motor.motor(0, 0, 0.5)
 					bomb = 1
+				"""
 				elif goalArea < 10000 and goalArea > 0 and goalGAP >= 0:
-					MP = curvingSwitch(goalGAP,15)
-					Motor.motor(mp_max + MP, mp_max + mp_adj, 0.5)
+					tbomb = time.time()
+					while time.time() - tbomb < 3:
+						LR2G, angR2G = calR2G(goalArea, goalGAP, areaSamp, LSamp)
+						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
+						Motor.motor(mPL, mPR, 0.001, 1)
+						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
+						goalRelativeAng = angR2G + goalBufAng - goalnowAng
+					Motor.motor(0, 0, 0.5)
 					bomb = 0
+				"""
 				elif goalArea >= 10000 and goalGAP < 0:
 					MP = curvingSwitch(goalGAP,10)
 					Motor.motor(mp_min, mp_max + MP + mp_adj, 0.3)
