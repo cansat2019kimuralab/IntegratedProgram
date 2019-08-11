@@ -43,6 +43,8 @@ areaSamp = 10000
 dSamp = 0.3
 
 calibrationLog = 	"/home/pi/log/calibrationLog"
+photopath = 		"/home/pi/photo/photo"
+
 """
 def Togoal(photopath, H_min, H_max, S_thd, mp_min, mp_max, mp_adj):
 	global e, mP, bomb, nAng, ellipseScale
