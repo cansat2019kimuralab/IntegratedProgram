@@ -199,7 +199,7 @@ def curvingSwitch(GAP, add):
 def calR2G(nowArea, nowGAP, SampArea, SampL, SampX, SampGAP):
 	nowL = SampL*math.sqrt(SampArea)/math.sqrt(nowArea)
 	print("nowL",nowL)
-	nowX = SampX * math.sqrt(nowL**2 - nowGAP**2) / math.sqrt(SampL**2 + SampGAP**2) * nowGAP / SampGAP
+	nowX = SampX * math.sqrt(1000*nowL**2 - nowGAP**2) / math.sqrt(1000*SampL**2 + SampGAP**2) * nowGAP / SampGAP
 	print("nowX",nowX)
 	angR2G = math.degrees(math.asin(nowX/nowL))
 	return [nowL, angR2G]
