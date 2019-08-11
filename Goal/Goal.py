@@ -182,7 +182,7 @@ def velPID(Goal, vel, Kp, Ki, Kd, max, min):
 	e1 = e
 	e2 = e1
 	e = vel - Goal
-	mP = mP + Kp * (e-e1) + Ki * e + Kd * ((e-e1) - (e1-e2))
+	mP = mP + Kp * (e-e1) *0.2 + Ki * e * 0.2 + Kd * ((e-e1) - (e1-e2)) * 0.2
 	mP = mP if mP <= max else max
 	if mP < 0:
 		mP = min
@@ -267,25 +267,37 @@ if __name__ == "__main__":
 					LR2G, angR2G = calR2G(goalArea, goalGAP, areaSamp, LSamp, xSamp, GAPSamp)
 					goalBufAng = RunningGPS.calNAng(ellipseScale, angOffset)
 					tbomb = time.time()
-					while time.time() - tbomb < 3:
+					while time.time() - tbomb < 13:
 						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
 						goalRelativeAng = angR2G + goalBufAng - goalnowAng
 						print("goalRelativeAng",goalRelativeAng)
-						#mPL, mPR, mPS = RunningGPS.runMotorSpeed(-goalRelativeAng, Gkp, mp_max)
-						MP = velPID(0, goalRelativeAng, 0.5, 0.3, 0, 40, -20)
-						Motor.motor(0, MP, 0.001, 1)
+						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
+						Motor.motor(mPL, mPR, 0.001, 1)
+						#if goalRelativeAng > 0:
+							#MP = velPID(0, goalRelativeAng, 0.4, 0.3, 0, 40, 0)
+							#Motor.motor(0, MP, 0.001, 1)
+						#else:
+							#MP = velPID(0, -goalRelativeAng, 0.4, 0.3, 0, 40, 0)
+							#Motor.motor(MP, 0, 0.001, 1)
+						#print('MP',MP)
 					Motor.motor(0, 0, 0.5)
 					bomb = 1
 				elif goalArea < 10000 and goalArea > 0 and goalGAP >= 0:
 					LR2G, angR2G = calR2G(goalArea, goalGAP, areaSamp, LSamp, xSamp, GAPSamp)
 					tbomb = time.time()
-					while time.time() - tbomb < 3:
+					while time.time() - tbomb < 13:
 						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
 						goalRelativeAng = angR2G + goalBufAng - goalnowAng
 						print("goalRelativeAng",goalRelativeAng)
-						#mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
-						MP = velPID(0, goalRelativeAng, 0.5, 0.3, 0, 40, -20)
-						Motor.motor(0, MP, 0.001, 1)
+						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
+						Motor.motor(mPL, mPR, 0.001, 1)
+						#if goalRelativeAng > 0:
+							#MP = velPID(0, goalRelativeAng, 0.4, 0.3, 0, 40, 0)
+							#Motor.motor(0, MP, 0.001, 1)
+						#else:
+							#MP = velPID(0, -goalRelativeAng, 0.4, 0.3, 0, 40, 0)
+							#Motor.motor(MP, 0, 0.001, 1)
+						#print('MP',MP)
 					Motor.motor(0, 0, 0.5)
 					bomb = 0
 				elif goalArea >= 10000 and goalGAP < 0:
