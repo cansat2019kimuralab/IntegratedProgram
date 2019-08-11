@@ -29,6 +29,7 @@ mP, mPL, mPR, mPS = 0, 0, 0, 0
 adj_add = 15
 angOffset = -77.0
 
+Gkp = 0.7
 goalFlug = -1
 goalBuf = -1
 goalArea = 0
@@ -151,7 +152,7 @@ if __name__ == "__main__":
 			print("bomb",bomb)
 			print("area",goalArea)
 			print("flug",goalFlug)	
-			goalnowAng = RunningGPS.calAng(ellipseScale, angOffset)
+			goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
 			#--------------------goal---------------------#
 			if goalFlug == 0:
 				Motor.motor(40, 40 + mp_adj, 1.5)
