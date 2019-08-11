@@ -44,6 +44,8 @@ areaSamp = 10000
 dSamp = 0.3
 
 calibrationLog = 	"/home/pi/log/calibrationLog"
+goalDetectionLog =	"/home/pi/log/goalDetectionLog.txt"
+captureLog = 		"/home/pi/log/captureLog.txt"
 photopath = 		"/home/pi/photo/photo"
 
 """
