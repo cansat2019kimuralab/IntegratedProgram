@@ -94,13 +94,13 @@ H_min = 200	#Hue minimam
 H_max = 10	#Hue maximam
 S_thd = 120	#Saturation threshold
 mp_min = 10	#motor power for Low level
-mp_max = 40	#motor power fot High level
+mp_max = 30	#motor power fot High level
 mp_adj = -2		#adjust motor power
 mP, mPL, mPR, mPS = 0, 0, 0, 0	
 adj_add = 15
 angOffset = -77.0
 
-Gkp = 0.7
+Gkp = 0.2
 goalFlug = -1
 goalBuf = -1
 goalArea = 0
@@ -115,7 +115,7 @@ timeout_calibration = 180	#time for calibration timeout
 areaSamp = 10000
 LSamp = 0.3
 GAPSamp = 50
-xSamp = 50
+xSamp = 0.1
 
 calibrationLog = 	"/home/pi/log/calibrationLog"
 goalDetectionLog =	"/home/pi/log/goalDetectionLog.txt"
@@ -199,9 +199,11 @@ def curvingSwitch(GAP, add):
 def calR2G(nowArea, nowGAP, SampArea, SampL, SampX, SampGAP):
 	nowL = SampL*math.sqrt(SampArea)/math.sqrt(nowArea)
 	print("nowL",nowL)
-	nowX = SampX * math.sqrt(1000*nowL**2 - nowGAP**2) / math.sqrt(1000*SampL**2 + SampGAP**2) * nowGAP / SampGAP
+	print("nowGAP",nowGAP)
+	nowX = SampX * math.sqrt((1000*nowL)**2 - nowGAP**2) / math.sqrt((1000*SampL)**2 - SampGAP**2) * nowGAP / SampGAP
 	print("nowX",nowX)
 	angR2G = math.degrees(math.asin(nowX/nowL))
+	print("angR2G",angR2G)
 	return [nowL, angR2G]
 
 if __name__ == "__main__":
@@ -211,7 +213,6 @@ if __name__ == "__main__":
 		while goalFlug != 0 or goalBuf != 0:
 			gpsdata = GPS.readGPS()
 			goalBuf = goalFlug
-			goalBufAng = goalnowAng
 			#-----------------calibration---------------------#
 			if time.time() - t > timeout_calibration:
 				fileCal = Other.fileName(calibrationLog, "txt")
@@ -248,24 +249,27 @@ if __name__ == "__main__":
 					bomb = 0
 			#---------------detect but no goal-------------#
 			else:
-				if goalArea < 10000 and goalArea > 0:
+				if goalArea < 10000 and goalArea > 0 and goalGAP < 0:
+					LR2G, angR2G = calR2G(goalArea, goalGAP, areaSamp, LSamp, xSamp, GAPSamp)
+					goalBufAng = RunningGPS.calNAng(ellipseScale, angOffset)
 					tbomb = time.time()
 					while time.time() - tbomb < 3:
-						LR2G, angR2G = calR2G(goalArea, goalGAP, areaSamp, LSamp, xSamp, GAPSamp)
-						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
-						Motor.motor(mPL, mPR, 0.001, 1)
 						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
 						goalRelativeAng = angR2G + goalBufAng - goalnowAng
+						print("goalRelativeAng",goalRelativeAng)
+						mPL, mPR, mPS = RunningGPS.runMotorSpeed(-goalRelativeAng, Gkp, mp_max)
+						Motor.motor(mPL, mPR, 0.001, 1)
 					Motor.motor(0, 0, 0.5)
 					bomb = 1
 				elif goalArea < 10000 and goalArea > 0 and goalGAP >= 0:
+					LR2G, angR2G = calR2G(goalArea, goalGAP, areaSamp, LSamp, xSamp, GAPSamp)
 					tbomb = time.time()
 					while time.time() - tbomb < 3:
-						LR2G, angR2G = calR2G(goalArea, goalGAP, areaSamp, LSamp, xSamp, GAPSamp)
-						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
-						Motor.motor(mPL, mPR, 0.001, 1)
 						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
 						goalRelativeAng = angR2G + goalBufAng - goalnowAng
+						print("goalRelativeAng",goalRelativeAng)
+						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
+						Motor.motor(mPL, mPR, 0.001, 1)
 					Motor.motor(0, 0, 0.5)
 					bomb = 0
 				elif goalArea >= 10000 and goalGAP < 0:
@@ -279,7 +283,7 @@ if __name__ == "__main__":
 					bomb = 0
 				else:
 					print("error")
-				print('MP',MP)
+				#print('MP',MP)
 
 			#goalFlug, goalArea, goalGAP, photoName, goalnowAng = Goal.Togoal(photopath, H_min, H_max, S_thd, mp_min, mp_max, mp_adj)
 			#goalBuf = goalFlug
