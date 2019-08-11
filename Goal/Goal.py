@@ -17,7 +17,78 @@ import goal_detection
 import Motor
 import GPS
 import Other
+# --- variable of time setting --- #
+t_start  = 0.0				#time when program started
+t_sleep = 60				#time for sleep phase
+t_release = 120				#time for release(loopx)
+t_land = 300					#time for land(loopy)
+t_melt = 5					#time for melting
+t_sleep_start = 0			#time for sleep origin
+t_release_start = 0			#time for release origin
+t_land_start = 0			#time for land origin
+t_calib_origin = 0			#time for calibration origin
+t_paraDete_start = 0
+t_takePhoto_start = 0		#time for taking photo
+timeout_calibration = 180	#time for calibration timeout
+timeout_parachute = 60
+timeout_takePhoto = 10		#time for taking photo timeout
 
+# --- variable for storing sensor data --- #
+gpsData = [0.0,0.0,0.0,0.0,0.0]						#variable to store GPS data
+bme280Data = [0.0,0.0,0.0,0.0]						#variable to store BME80 data
+bmx055data = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]	#variable to store BMX055 data
+
+# --- variable for Judgement --- #
+lcount = 0		#lux count for release
+acount = 0		#press count for release
+Pcount = 0		#press count for land
+GAcount = 0
+gacount=0	#GPSheight count for land
+luxjudge = 0	#for release
+pressjudge = 0	#for release and land
+gpsjudge = 0	#for land
+paraExsist = 0 	#variable for Para Detection    0:Not Exsist, 1:Exsist
+goalFlug = -1	#variable for GoalDetection		-1:Not Detect, 0:Goal, 1:Detect
+goalBuf = -1
+goalArea = 0	#variable for goal area
+goalGAP = -1	#variable for goal gap
+H_min = 200		#Hue minimam
+H_max = 10		#Hue maximam
+S_thd = 120		#Saturation threshold
+
+# --- variable for Running --- #
+fileCal = "" 						#file path for Calibration
+ellipseScale = [0.0, 0.0, 0.0, 0.0] #Convert coefficient Ellipse to Circle
+disGoal = 100.0						#Distance from Goal [m]
+angGoal = 0.0						#Angle toword Goal [deg]
+angOffset = -77.0					#Angle Offset towrd North [deg]
+gLat, gLon = 35.742532, 140.011542	#Coordinates of That time
+nLat, nLon = 0.0, 0.0		  		#Coordinates of That time
+nAng = 0.0							#Direction of That time [deg]
+relAng = [0.0, 0.0, 0.0]			#Relative Direction between Goal and Rober That time [deg]
+rAng = 0.0							#Median of relAng [deg]
+mP, mPL, mPR, mPS = 0, 0, 0, 0		#Motor Power
+kp = 0.8							#Proportional Gain
+maxMP = 60							#Maximum Motor Power
+mp_min = 20							#motor power for Low level
+mp_max = 50							#motor power fot High level
+mp_adj = 2							#adjust motor power
+
+# --- variable of Log path --- #
+phaseLog =			"/home/pi/log/phaseLog.txt"
+sleepLog = 			"/home/pi/log/sleepLog.txt"
+releaseLog = 		"/home/pi/log/releaseLog.txt"
+landingLog = 		"/home/pi/log/landingLog.txt"
+meltingLog = 		"/home/pi/log/meltingLog.txt"
+paraAvoidanceLog = 	"/home/pi/log/paraAvoidanceLog.txt"
+runningLog = 		"/home/pi/log/runningLog.txt"
+goalDetectionLog =	"/home/pi/log/goalDetectionLog.txt"
+captureLog = 		"/home/pi/log/captureLog.txt"
+calibrationLog = 	"/home/pi/log/calibrationLog"
+errorLog = 			"/home/pi/log/erroLog.txt"
+
+photopath = 		"/home/pi/photo/photo"
+photoName =			""
 bomb = 0	#flug for rotation
 H_min = 200	#Hue minimam
 H_max = 10	#Hue maximam
