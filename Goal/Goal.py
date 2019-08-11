@@ -28,6 +28,7 @@ mp_adj = -2		#adjust motor power
 mP, mPL, mPR, mPS = 0, 0, 0, 0	
 adj_add = 15
 angOffset = -77.0
+
 goalFlug = -1
 goalBuf = -1
 goalArea = 0
@@ -35,6 +36,8 @@ goalGAP = -1
 goalnowAng = 1
 goalBufAng = 1
 ellipseScale = 1
+
+t = 0
 timeout_calibration = 180	#time for calibration timeout
 areaSamp = 10000
 dSamp = 0.3
