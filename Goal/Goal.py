@@ -242,13 +242,17 @@ if __name__ == "__main__":
 					Motor.motor(0, 0, 0.5)
 					bomb = 1
 				else:
-					mPL, mpR, mPS = RunningGPS.runMotorSpeed(-30, Gkp, mp_max)
-					Motor.motor(mPL, mPR + mp_adj, 0.001, 1)
+					tbomb = time.time()
+					while time.time() - tbomb < 3:
+						mPL, mpR, mPS = RunningGPS.runMotorSpeed(30, Gkp, mp_max)
+						Motor.motor(mPL, mPR + mp_adj, 0.001, 1)
+						tbomb = time.time()
+					Motor.motor(0, 0, 0.5)
 					bomb = 0
 			#---------------detect but no goal-------------#
 			else:
 				if goalArea < 10000 and goalArea > 0 and goalGAP < 0:
-					MP = curvingSwitch(GAP,15)
+					MP = curvingSwitch(goalGAP,15)
 					Motor.motor(mp_max, mp_max + MP + mp_adj, 0.5)
 					bomb = 1
 				elif goalArea < 10000 and goalArea > 0 and goalGAP >= 0:
