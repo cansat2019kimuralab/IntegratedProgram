@@ -176,21 +176,21 @@ if __name__ == "__main__":
 					bomb = 0
 			#---------------detect but no goal-------------#
 			else:
-				if area < 10000 and area > 0 and GAP < 0:
+				if goalArea < 10000 and goalArea > 0 and goalGAP < 0:
 					MP = curvingSwitch(GAP,15)
 					Motor.motor(mp_max, mp_max + MP + mp_adj, 0.5)
 					bomb = 1
-				elif area < 10000 and area > 0 and GAP >= 0:
-					MP = curvingSwitch(GAP,15)
+				elif goalArea < 10000 and goalArea > 0 and goalGAP >= 0:
+					MP = curvingSwitch(goalGAP,15)
 					Motor.motor(mp_max + MP, mp_max + mp_adj, 0.5)
 					bomb = 0
-				elif area >= 10000 and GAP < 0:
-					MP = curvingSwitch(GAP,15)
+				elif goalArea >= 10000 and goalGAP < 0:
+					MP = curvingSwitch(goalGAP,10)
 					Motor.motor(mp_min, mp_max + MP + mp_adj, 0.3)
 					bomb = 1
 
-				elif area >= 10000 and GAP >= 0:
-					MP = curvingSwitch(GAP,10)
+				elif goalArea >= 10000 and goalGAP >= 0:
+					MP = curvingSwitch(goalGAP,10)
 					Motor.motor(mp_max + MP, mp_min + mp_adj, 0.3)
 					bomb = 0
 				else:
