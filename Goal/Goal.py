@@ -94,7 +94,7 @@ H_min = 200	#Hue minimam
 H_max = 10	#Hue maximam
 S_thd = 120	#Saturation threshold
 mp_min = 10	#motor power for Low level
-mp_max = 30	#motor power fot High level
+mp_max = 40	#motor power fot High level
 mp_adj = -2		#adjust motor power
 mP, mPL, mPR, mPS = 0, 0, 0, 0	
 adj_add = 15
@@ -267,12 +267,14 @@ if __name__ == "__main__":
 					LR2G, angR2G = calR2G(goalArea, goalGAP, areaSamp, LSamp, xSamp, GAPSamp)
 					goalBufAng = RunningGPS.calNAng(ellipseScale, angOffset)
 					tbomb = time.time()
-					while time.time() - tbomb < 13:
+					while time.time() - tbomb < 4:
 						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
 						goalRelativeAng = angR2G + goalBufAng - goalnowAng
 						print("goalRelativeAng",goalRelativeAng)
-						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
+						print('ang', goalnowAng - goalBufAng)
+						mPL, mPR, mPS = RunningGPS.runMotorSpeed(-goalRelativeAng, Gkp, mp_max)
 						Motor.motor(mPL, mPR, 0.001, 1)
+						print("mPL",mPL,"mPR",mPR)
 						#if goalRelativeAng > 0:
 							#MP = velPID(0, goalRelativeAng, 0.4, 0.3, 0, 40, 0)
 							#Motor.motor(0, MP, 0.001, 1)
@@ -285,11 +287,13 @@ if __name__ == "__main__":
 				elif goalArea < 10000 and goalArea > 0 and goalGAP >= 0:
 					LR2G, angR2G = calR2G(goalArea, goalGAP, areaSamp, LSamp, xSamp, GAPSamp)
 					tbomb = time.time()
-					while time.time() - tbomb < 13:
+					while time.time() - tbomb < 4:
 						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
 						goalRelativeAng = angR2G + goalBufAng - goalnowAng
 						print("goalRelativeAng",goalRelativeAng)
-						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
+						print('ang', goalnowAng - goalBufAng)
+						mPL, mPR, mPS = RunningGPS.runMotorSpeed(-goalRelativeAng, Gkp, mp_max)
+						print("mPL",mPL,"mPR",mPR)
 						Motor.motor(mPL, mPR, 0.001, 1)
 						#if goalRelativeAng > 0:
 							#MP = velPID(0, goalRelativeAng, 0.4, 0.3, 0, 40, 0)
