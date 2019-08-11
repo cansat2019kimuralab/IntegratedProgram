@@ -108,6 +108,7 @@ goalGAP = -1
 goalnowAng = 1
 goalBufAng = 1
 ellipseScale = 1
+goalRelativeAng = 0
 
 t = 0
 timeout_calibration = 180	#time for calibration timeout
@@ -237,20 +238,22 @@ if __name__ == "__main__":
 				if bomb == 1:
 					tbomb = time.time()
 					while time.time() - tbomb < 3:
-						mPL, mpR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
-						Motor.motor(0, mPS, 0.001, 1)
+						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
+						Motor.motor(mPL, mPR, 0.001, 1)
 						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
-						goalRelativeAng = goalBufAng - goalnowAng
+						goalRelativeAng = -60 + goalBufAng - goalnowAng
 					Motor.motor(0, 0, 0.5)
+					goalBufAng = goalnowAng
 					bomb = 1
 				else:
 					tbomb = time.time()
 					while time.time() - tbomb < 3:
-						mPL, mpR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
-						Motor.motor(0, mPS, 0.001, 1)
+						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
+						Motor.motor(mPL, mPR, 0.001, 1)
 						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
-						goalRelativeAng = goalBufAng - goalnowAng
+						goalRelativeAng = 60 - goalBufAng + goalnowAng
 					Motor.motor(0, 0, 0.5)
+					goalBufAng = goalnowAng
 					bomb = 0
 			#---------------detect but no goal-------------#
 			else:
