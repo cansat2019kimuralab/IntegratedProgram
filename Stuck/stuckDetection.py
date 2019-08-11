@@ -48,18 +48,34 @@ def stuckDetection(nLat, nLon):
 if __name__ == "__main__":
     try:
         GPS.openGPS()
-        while(not RunningGPS.checkGPSstatus(gpsData)):
-            time.sleep(1)
-            gpsData = GPS.readGPS()
-        time.sleep(10)
-        if(not stuckDetection(gpsData[1], gpsData[2])):
-            print()
-        GPS.closeGPS()
+        while 1:
+            # --- Get GPS Data --- #
+            while(not RunningGPS.checkGPSstatus(gpsData)):
+                time.sleep(1)
+                gpsData = GPS.readGPS()
+
+            # --- Run --- #
+            #Motor.motor(60, 60, 1)
+            time.sleep(10)
+            Motor.motor(0, 0, 1)
+
+            # --- Get GPS Data adn Judge Stuck --- #
+            while(not RunningGPS.checkGPSstatus(gpsData)):
+                time.sleep(1)
+                gpsData = GPS.readGPS()
+            stuckMode = stuckDetection(gpsData[1], gpsData[2])
+            print(stuckMode)
+            #stuckMode
+            #   0 : Not Stuck
+            #   1 : Stuck
+            Motor.motor(0, 0, 1)
+
         Motor.motor(0, 0, 1)
+        GPS.closeGPS()
     except KeyboardInterrupt:
-        GPS.closeGPS()
         Motor.motor(0, 0, 1)
+        GPS.closeGPS()
     except:
         print(traceback.format_exc())
-        GPS.closeGPS()
         Motor.motor(0, 0, 1)
+        GPS.closeGPS()
