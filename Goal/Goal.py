@@ -233,20 +233,23 @@ if __name__ == "__main__":
 				
 			#------------------not detect----------------------#
 			elif goalFlug == -1:
+				goalBufAng = goalnowAng
 				if bomb == 1:
 					tbomb = time.time()
 					while time.time() - tbomb < 3:
-						mPL, mpR, mPS = RunningGPS.runMotorSpeed(30, Gkp, mp_max)
-						Motor.motor(mPL, mPR + mp_adj, 0.001, 1)
-						tbomb = time.time()
+						mPL, mpR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
+						Motor.motor(0, mPS, 0.001, 1)
+						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
+						goalRelativeAng = goalBufAng - goalnowAng
 					Motor.motor(0, 0, 0.5)
 					bomb = 1
 				else:
 					tbomb = time.time()
 					while time.time() - tbomb < 3:
-						mPL, mpR, mPS = RunningGPS.runMotorSpeed(30, Gkp, mp_max)
-						Motor.motor(mPL, mPR + mp_adj, 0.001, 1)
-						tbomb = time.time()
+						mPL, mpR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
+						Motor.motor(0, mPS, 0.001, 1)
+						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
+						goalRelativeAng = goalBufAng - goalnowAng
 					Motor.motor(0, 0, 0.5)
 					bomb = 0
 			#---------------detect but no goal-------------#
