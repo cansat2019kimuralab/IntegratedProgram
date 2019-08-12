@@ -111,7 +111,7 @@ goalthd = 20000
 ellipseScale = 1
 goalRelativeAng = 0
 
-t = 0
+t_paraDete_start = 0
 timeout_calibration = 180	#time for calibration timeout
 areaSamp = 10000
 LSamp = 1.0
@@ -134,14 +134,14 @@ if __name__ == "__main__":
 			gpsdata = GPS.readGPS()
 			goalBuf = goalFlug
 			#-----------------calibration---------------------#
-			if time.time() - t > timeout_calibration:
+			if time.time() - t_paraDete_start > timeout_calibration:
 				fileCal = Other.fileName(calibrationLog, "txt")
 				Motor.motor(60, 0, 2)
 				Calibration.readCalData(fileCal)
 				Motor.motor(0, 0, 1)
 				ellipseScale = Calibration.Calibration(fileCal)
 				Other.saveLog(fileCal, ellipseScale)
-				t = time.time()
+				t_paraDete_start = time.time()
 
 			Motor.motor(0,0,0.5)
 			Motor.motor(15,15,0.3)
@@ -159,7 +159,6 @@ if __name__ == "__main__":
 				Motor.motor(0, 0, 3)				
 			#------------------not detect----------------------#
 			elif goalFlug == -1:
-				goalBufAng = goalnowAng
 				if bomb == 1:
 					Motor.motor(mp_max, mp_min + mp_adj, 0.5)
 					bomb = 1
@@ -188,6 +187,7 @@ if __name__ == "__main__":
 				#----------------------target right------------------------#
 				elif goalArea < 10000 and goalArea > 0 and goalGAP >= 0:
 					LR2G, angR2G = goal_detection.calR2G(goalArea, goalGAP, areaSamp, LSamp, xSamp, GAPSamp)
+					goalBufAng = RunningGPS.calNAng(ellipseScale, angOffset)
 					tbomb = time.time()
 					while time.time() - tbomb < 4:
 						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
