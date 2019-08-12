@@ -107,6 +107,7 @@ goalArea = 0
 goalGAP = -1
 goalnowAng = 1
 goalBufAng = 1
+goalthd = 20000
 ellipseScale = 1
 goalRelativeAng = 0
 
@@ -124,38 +125,6 @@ calibrationLog = 	"/home/pi/log/calibrationLog"
 goalDetectionLog =	"/home/pi/log/goalDetectionLog.txt"
 captureLog = 		"/home/pi/log/captureLog.txt"
 photopath = 		"/home/pi/photo/photo"
-
-def curvingSwitch(GAP, add):
-	if abs(GAP) > 144:
-		return add
-	elif abs(GAP) > 128:
-		return add*0.9
-	elif abs(GAP) > 112:
-		return add*0.8
-	elif abs(GAP) > 96:
-		return add*0.7
-	elif abs(GAP) > 80:
-		return add*0.6
-	elif abs(GAP) > 64:
-		return add*0.5
-	elif abs(GAP) > 48:
-		return add*0.4
-	elif abs(GAP) > 32:
-		return add*0.3
-	elif abs(GAP) > 16:
-		return add*0.2
-	elif abs(GAP) >= 0:
-		return 0
-
-def calR2G(nowArea, nowGAP, SampArea, SampL, SampX, SampGAP):
-	nowL = SampL*math.sqrt(SampArea)/math.sqrt(nowArea)
-	print("nowL",nowL)
-	print("nowGAP",nowGAP)
-	nowX = SampX * math.sqrt((1000*nowL)**2 - nowGAP**2) / math.sqrt((1000*SampL)**2 - SampGAP**2) * nowGAP / SampGAP
-	print("nowX",nowX)
-	angR2G = math.degrees(math.asin(nowX/nowL))
-	print("angR2G",angR2G)
-	return [nowL, angR2G]
 
 if __name__ == "__main__":
 	try:
@@ -178,7 +147,7 @@ if __name__ == "__main__":
 			Motor.motor(15,15,0.3)
 			Motor.motor(0,0,0.3)
 			#-----------------get information-----------------#
-			goalFlug, goalArea, goalGAP, photoName = goal_detection.GoalDetection(photopath, H_min, H_max, S_thd)
+			goalFlug, goalArea, goalGAP, photoName = goal_detection.GoalDetection(photopath, H_min, H_max, S_thd, goalthd)
 			print("GAP",goalGAP)
 			print("bomb",bomb)
 			print("area",goalArea)
@@ -201,7 +170,7 @@ if __name__ == "__main__":
 			else:
 				#-----------------target left------------------#
 				if goalArea < 10000 and goalArea > 0 and goalGAP < 0:
-					LR2G, angR2G = calR2G(goalArea, goalGAP, areaSamp, LSamp, xSamp, GAPSamp)
+					LR2G, angR2G = goal_detection.goal_detection.calR2G(goalArea, goalGAP, areaSamp, LSamp, xSamp, GAPSamp)
 					goalBufAng = RunningGPS.calNAng(ellipseScale, angOffset)
 					tbomb = time.time()
 					while time.time() - tbomb < 4:
@@ -218,7 +187,7 @@ if __name__ == "__main__":
 					bomb = 1
 				#----------------------target right------------------------#
 				elif goalArea < 10000 and goalArea > 0 and goalGAP >= 0:
-					LR2G, angR2G = calR2G(goalArea, goalGAP, areaSamp, LSamp, xSamp, GAPSamp)
+					LR2G, angR2G = goal_detection.calR2G(goalArea, goalGAP, areaSamp, LSamp, xSamp, GAPSamp)
 					tbomb = time.time()
 					while time.time() - tbomb < 4:
 						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
@@ -226,17 +195,17 @@ if __name__ == "__main__":
 						print("goalRelativeAng",goalRelativeAng)
 						print('difang', goalnowAng - goalBufAng)
 						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
-						print("mPL",mPL,"mPR",mPR)
 						Motor.motor(mPL, mPR, 0.001, 1)
+						print("mPL",mPL,"mPR",mPR)
 					Motor.motor(0, 0, 0.5)
 					bomb = 0
 				elif goalArea >= 10000 and goalGAP < 0:
-					MP = curvingSwitch(goalGAP,10)
+					MP = goal_detection.curvingSwitch(goalGAP,10)
 					Motor.motor(mp_min, mp_max + MP + mp_adj, 0.3)
 					bomb = 1
 
 				elif goalArea >= 10000 and goalGAP >= 0:
-					MP = curvingSwitch(goalGAP,10)
+					MP = goal_detection.curvingSwitch(goalGAP,10)
 					Motor.motor(mp_max + MP, mp_min + mp_adj, 0.3)
 					bomb = 0
 				else:
