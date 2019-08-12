@@ -35,7 +35,7 @@ def stuckDetection(nLat, nLon):
 
     if(not nLon == 0.0):
         distance, angle1, angle2 = RunningGPS.calGoal(nLat, nLon, oLat, oLon, 0.0)
-        if(distance <= 10):
+        if(distance <= 5):
             stuckStatus = 1
             stuckNum = stuckNum + 1
         else:
@@ -43,7 +43,7 @@ def stuckDetection(nLat, nLon):
             stuckNum = 0
         oLat = nLat
         oLon = nLon
-    return stuckStatus
+    return stuckStatus, stuckNum
 
 if __name__ == "__main__":
     try:
