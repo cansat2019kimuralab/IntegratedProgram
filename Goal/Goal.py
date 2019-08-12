@@ -148,10 +148,8 @@ if __name__ == "__main__":
 			Motor.motor(0,0,0.3)
 			#-----------------get information-----------------#
 			goalFlug, goalArea, goalGAP, photoName = goal_detection.GoalDetection(photopath, H_min, H_max, S_thd, goalthd)
-			print("GAP",goalGAP)
-			print("bomb",bomb)
-			print("area",goalArea)
-			print("flug",goalFlug)	
+			print("flug", goalFlug, "area", goalArea, "GAP", goalGAP)
+			#print("bomb",bomb)
 			goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
 			#--------------------goal---------------------#
 			if goalFlug == 0:
@@ -212,10 +210,6 @@ if __name__ == "__main__":
 				else:
 					print("error")
 				#print('MP',MP)
-
-			#goalFlug, goalArea, goalGAP, photoName, goalnowAng = Goal.Togoal(photopath, H_min, H_max, S_thd, mp_min, mp_max, mp_adj)
-			#goalBuf = goalFlug
-			#print("goal is",goalFlug)
 			Other.saveLog(goalDetectionLog, time.time() - t_start, gpsData, goalFlug, goalArea, goalGAP, goalnowAng, photoName)
 			Other.saveLog(captureLog, time.time() - t_start, photoName)
 			"""
