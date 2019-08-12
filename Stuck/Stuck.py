@@ -15,16 +15,26 @@ import Motor
 
 stuck = 0
 
-def stuckDetection():
-	stuck = 0
-	bmx055data = BMX055.bmx055_read()
+def stuckDetection(nLat, nLon):
+	global oLat
+	global oLon
+	global stuckNum
+	distance = 0.0
+	angle1, angle2 = 0.0, 0.0
+	stuckStatus = 0
 
-	if(math.fabs(bmx055data[0]) > 2.0):
-		stuck = 1
-
-	# --- Return Value --- #
-	#   1: roll over
-	return stuck
+	if(not nLon == 0.0):
+		distance, angle1, angle2 = RunningGPS.calGoal(nLat, nLon, oLat, oLon, 0.0)
+		if(distance <= 5):
+			stuckStatus = 1
+			stuckNum = stuckNum + 1
+		else:
+			stuckStatus = 0
+			stuckNum = 0
+		oLat = nLat
+		oLon = nLon
+		#print(distance)
+	return stuckStatus, stuckNum
 
 def stuckEscape(mode = 0):
 	# --- Mode --- #
