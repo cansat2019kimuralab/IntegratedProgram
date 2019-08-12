@@ -199,6 +199,7 @@ if __name__ == "__main__":
 						print("mPL",mPL,"mPR",mPR)
 					Motor.motor(0, 0, 0.5)
 					bomb = 0
+				#-----------------near the target------------------#
 				elif goalArea >= 10000 and goalGAP < 0:
 					MP = goal_detection.curvingSwitch(goalGAP,10)
 					Motor.motor(mp_min, mp_max + MP + mp_adj, 0.3)
@@ -214,7 +215,7 @@ if __name__ == "__main__":
 
 			#goalFlug, goalArea, goalGAP, photoName, goalnowAng = Goal.Togoal(photopath, H_min, H_max, S_thd, mp_min, mp_max, mp_adj)
 			#goalBuf = goalFlug
-			print("goal is",goalFlug)
+			#print("goal is",goalFlug)
 			Other.saveLog(goalDetectionLog, time.time() - t_start, gpsData, goalFlug, goalArea, goalGAP, goalnowAng, photoName)
 			Other.saveLog(captureLog, time.time() - t_start, photoName)
 			"""
