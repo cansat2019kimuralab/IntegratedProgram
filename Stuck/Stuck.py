@@ -3,7 +3,9 @@ import sys
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/BMX055')
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/IM920')
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/Motor')
+sys.path.append('/home/pi/git/kimuralab/IntegratedProgram/Running')
 sys.path.append('/home/pi/git/kimuralab/Other')
+
 
 import math
 import pigpio
@@ -12,8 +14,12 @@ import traceback
 
 import BMX055
 import Motor
+import RunningGPS
 
 stuck = 0
+oLat = 0
+oLon = 0
+stuckNum = 0
 
 def stuckDetection(nLat, nLon):
 	global oLat
