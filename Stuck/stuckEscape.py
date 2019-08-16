@@ -10,12 +10,29 @@ import traceback
 
 import BMX055
 import GPS
+import Motor
 import Other
 
 
+def fuckingRun(mP, accy_thd):
+	Motor.motor(mP, mP, 3)
+	bmx055Data = BMX055.bmx055_read()
+	Motor.motor(0, 0, 2)
+	if abs(bmx055Data[1]) < accy_thd:
+		Motor.motor(-mP, -mP, 3)
+		Motor.motor(mP, -mP, 3)
+		Motor.motor(-mP, mP, 3)
+		Motor.motor(0, 0, 2)
+
 if __name__ == "__main__":
-    try:
-        
-    except KeyboardInterrupt:
-    except:
-        print(traceback.format_exc())
+	try:
+		BMX055.bmx055_setup()
+		fucking(30, 50)
+	except KeyboardInterrupt:
+		Motor.motor_stop()
+		print("Emergency!")
+		#GPS.closeGPS()
+	except:
+		Motor.motor_stop()
+		#GPS.closeGPS()
+		print(traceback.format_exc())
