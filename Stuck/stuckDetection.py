@@ -32,7 +32,7 @@ def BMXstuckDetection(mP, bmxThd, measureCount, countThd):
 		aveinit = aveinit + bmxinit[5]
 	aveinit = aveinit / 5
 	#print('aveinit', aveinit)
-	Motor.motor(-mP, mP, 1)
+	Motor.motor(-mP, mP, 0.001, 1)
 	for i in range(measureCount):
 		bmxnow = BMX055.bmx055_read()
 		#print(i, "now:", bmxnow[0:6])
