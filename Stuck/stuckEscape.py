@@ -1,8 +1,8 @@
 import sys
-sys.append.path("/home/pi/git/kimuralab/SensorModuleTest/BMX055")
-sys.append.path("/home/pi/git/kimuralab/SensorModuleTest/GPS")
-sys.append.path("/home/pi/git/kimuralab/SensorModuleTest/Motor")
-sys.append.path("/home/pi/git/kimuralab/Other")
+sys.path.append("/home/pi/git/kimuralab/SensorModuleTest/BMX055")
+sys.path.append("/home/pi/git/kimuralab/SensorModuleTest/GPS")
+sys.path.append("/home/pi/git/kimuralab/SensorModuleTest/Motor")
+sys.path.append("/home/pi/git/kimuralab/Other")
 
 import pigpio
 import time
