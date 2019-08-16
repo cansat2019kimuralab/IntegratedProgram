@@ -27,7 +27,7 @@ def fuckingRun(mP, accy_thd):
 if __name__ == "__main__":
 	try:
 		BMX055.bmx055_setup()
-		fucking(30, 50)
+		fuckingRun(30, 50)
 	except KeyboardInterrupt:
 		Motor.motor_stop()
 		print("Emergency!")
