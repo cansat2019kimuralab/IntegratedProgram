@@ -20,6 +20,34 @@ oLon = 0.0
 gpsData = [0.0, 0.0, 0.0, 0.0, 0.0]
 stuckNum = 0
 
+aveinit = 0
+stuckCount = 0
+stuckFlug = 0
+
+def BMXstuckDetection(mP, bmxThd, measureCount, countThd):
+	global aveinit, stuckCount
+	for i in range(5):
+		bmxinit = BMX055.bmx055_read()
+		#print(i, "init:", bmxinit[0:6])
+		aveinit = aveinit + bmxinit[5]
+	aveinit = aveinit / 5
+	#print('aveinit', aveinit)
+	Motor.motor(-mP, mP, 1)
+	for i in range(measureCount):
+		bmxnow = BMX055.bmx055_read()
+		#print(i, "now:", bmxnow[0:6])
+		if bmxnow[5] - aveinit < bmxThd:
+			stuckCount = stuckCount + 1
+			#print('stuckCount', stuckCount)
+			if stuckCount > countThd:
+				print("stuck DA YO NE ?")
+				Motor.motor(0, 0, 2)
+				return 1
+		else:
+			stuckCount = 0
+	Motor.motor(0, 0, 2)
+	return 0
+
 def stuckDetection(nLat, nLon):
 	global oLat
 	global oLon
@@ -51,6 +79,7 @@ def stuckDetection(nLat, nLon):
 if __name__ == "__main__":
 	try:
 		GPS.openGPS()
+		"""
 		while 1:
 			# --- Get GPS Data adn Judge Stuck --- #
 			gpsData = GPS.readGPS()
@@ -61,14 +90,23 @@ if __name__ == "__main__":
 			stuckMode = stuckDetection(gpsData[1], gpsData[2])
 			print(stuckMode)
 			#stuckMode
-			#   0 : Not Stuck
-			#   1 : Stuck
+			#	0 : Not Stuck
+			#	1 : Stuck
 			Motor.motor(0, 0, 1)
 
 			#Motor.motor(60, 60, 1)
 			time.sleep(20)
 			Motor.motor(0, 0, 1)
 
+		"""
+		BMX055.bmx055_setup()
+		stuckFlug = BMXstuckDetection(50, 100, 20, 5)
+		if stuckFlug == 1:
+			Motor.motor(20, 20, 1)
+			Motor.motor(-20, -20, 1)
+			Motor.motor(20, -20, 1)
+			Motor.motor(-20, 20, 1)
+			Motor.motor(0, 0, 2)
 		Motor.motor(0, 0, 1)
 		GPS.closeGPS()
 	except KeyboardInterrupt:
