@@ -100,7 +100,7 @@ if __name__ == "__main__":
 
 		"""
 		BMX055.bmx055_setup()
-		stuckFlug = BMXstuckDetection(50, 100, 1000, 10)
+		stuckFlug = BMXstuckDetection(50, 100, 30, 10)
 		if stuckFlug == 1:
 			Motor.motor(20, 20, 1)
 			Motor.motor(-20, -20, 1)
