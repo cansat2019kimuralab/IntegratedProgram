@@ -21,7 +21,6 @@ photopath = 		"/home/pi/photo/photo"
 
 if __name__ == "__main__":
 	try:
-		BMX055.bmx055_setup()
 		while 1:
 			#-----------------get information-----------------#
 			Motor.motor(15, 15, 1.0)
