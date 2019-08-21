@@ -5,6 +5,7 @@ sys.path.append("/home/pi/git/kimuralab/SensorModuleTest/GPS")
 sys.path.append("/home/pi/git/kimuralab/SensorModuleTest/Motor")
 sys.path.append("/home/pi/git/kimuralab/Other")
 
+import math
 import pigpio
 import time
 import traceback
@@ -24,29 +25,36 @@ aveinit = 0
 stuckCount = 0
 stuckFlug = 0
 
-def BMXstuckDetection(mP, bmxThd, measureCount, countThd):
+def BMXstuckDetection(mP, bmxThd, measureCount, countThd, mode=0):
 	global aveinit, stuckCount
-	for i in range(5):
-		bmxinit = BMX055.bmx055_read()
-		#print(i, "init:", bmxinit[0:6])
-		aveinit = aveinit + bmxinit[5]
-	aveinit = aveinit / 5
-	#print('aveinit', aveinit)
-	Motor.motor(-mP, mP, 0.001, 1)
+	returnVal = 0
+	if mode == 0:
+		for i in range(5):
+			bmxinit = BMX055.bmx055_read()
+			print(i, "init:", bmxinit[0:6])
+			aveinit = aveinit + bmxinit[5]
+		aveinit = aveinit / 5
+		#print('aveinit', aveinit)
+		Motor.motor(-mP, mP, 0.5)
+
 	for i in range(measureCount):
 		bmxnow = BMX055.bmx055_read()
-		#print(i, "now:", bmxnow[0:6])
-		if bmxnow[5] - aveinit < bmxThd:
+		print(i, "now:", bmxnow[5])
+		if math.fabs(bmxnow[5] - aveinit) < bmxThd:
 			stuckCount = stuckCount + 1
 			#print('stuckCount', stuckCount)
 			if stuckCount > countThd:
 				print("stuck DA YO NE ?")
-				Motor.motor(0, 0, 2)
-				return 1
+				#Motor.motor(0, 0, 2)
+				returnVal =  1
+				break
 		else:
 			stuckCount = 0
-	Motor.motor(0, 0, 2)
-	return 0
+
+	if mode == 0:
+		Motor.motor(0, 0, 2)
+
+	return returnVal
 
 def stuckDetection(nLat, nLon):
 	global oLat
@@ -99,14 +107,20 @@ if __name__ == "__main__":
 			Motor.motor(0, 0, 1)
 
 		"""
+		Motor.motor(60, 60, 3)
+		Motor.motor(0, 0, 2)
 		BMX055.bmx055_setup()
-		stuckFlug = BMXstuckDetection(50, 100, 1000, 10)
+		stuckFlug = BMXstuckDetection(70, 100, 100, 20)
 		if stuckFlug == 1:
-			Motor.motor(20, 20, 1)
-			Motor.motor(-20, -20, 1)
-			Motor.motor(20, -20, 1)
-			Motor.motor(-20, 20, 1)
-			Motor.motor(0, 0, 2)
+			for i in range(2):
+				Motor.motor(-70, -70, 3)
+				Motor.motor(0, 0, 2)
+				Motor.motor(-70, 70, 3)
+				Motor.motor(0, 0, 2)
+				Motor.motor(70, 70, 3)
+				Motor.motor(0, 0, 2)
+				Motor.motor(-70, 70, 3)
+				Motor.motor(0, 0, 2)
 		Motor.motor(0, 0, 1)
 		GPS.closeGPS()
 	except KeyboardInterrupt:
