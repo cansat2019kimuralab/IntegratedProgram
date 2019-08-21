@@ -1,242 +1,44 @@
 import sys
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/Motor')
-sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/GPS')
-sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/BMX055')
-sys.path.append('/home/pi/git/kimuralab/Other')
 sys.path.append('/home/pi/git/kimuralab/Detection/GoalDetection')
-sys.path.append('/home/pi/git/kimuralab/IntegratedProgram/Running')
-sys.path.append('/home/pi/git/kimuralab/IntegratedProgram/Calibration')
 import RunningGPS
 import time
-import math
 import numpy as np
 import traceback
-import BMX055
 import Calibration
 import goal_detection
 import Motor
-import GPS
-import Other
-# --- variable of time setting --- #
-t_start  = 0.0				#time when program started
-t_sleep = 60				#time for sleep phase
-t_release = 120				#time for release(loopx)
-t_land = 300					#time for land(loopy)
-t_melt = 5					#time for melting
-t_sleep_start = 0			#time for sleep origin
-t_release_start = 0			#time for release origin
-t_land_start = 0			#time for land origin
-t_calib_origin = 0			#time for calibration origin
-t_paraDete_start = 0
-t_takePhoto_start = 0		#time for taking photo
-timeout_calibration = 180	#time for calibration timeout
-timeout_parachute = 60
-timeout_takePhoto = 10		#time for taking photo timeout
 
-# --- variable for storing sensor data --- #
-gpsData = [0.0,0.0,0.0,0.0,0.0]						#variable to store GPS data
-bme280Data = [0.0,0.0,0.0,0.0]						#variable to store BME80 data
-bmx055data = [0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]	#variable to store BMX055 data
+goalArea = 0		#variable for goal area
+goalGAP = -1		#variable for goal gap
+goalthd = 7000		#variable for goal area thd
+H_min = 220			#Hue minimam
+H_max = 5			#Hue maximam
+S_thd = 180			#Saturation threshold
 
-# --- variable for Judgement --- #
-lcount = 0		#lux count for release
-acount = 0		#press count for release
-Pcount = 0		#press count for land
-GAcount = 0
-gacount=0	#GPSheight count for land
-luxjudge = 0	#for release
-pressjudge = 0	#for release and land
-gpsjudge = 0	#for land
-paraExsist = 0 	#variable for Para Detection    0:Not Exsist, 1:Exsist
-goalFlug = -1	#variable for GoalDetection		-1:Not Detect, 0:Goal, 1:Detect
-goalBuf = -1
-goalArea = 0	#variable for goal area
-goalGAP = -1	#variable for goal gap
-H_min = 200		#Hue minimam
-H_max = 10		#Hue maximam
-S_thd = 120		#Saturation threshold
 
-# --- variable for Running --- #
-fileCal = "" 						#file path for Calibration
-ellipseScale = [0.0, 0.0, 0.0, 0.0] #Convert coefficient Ellipse to Circle
-disGoal = 100.0						#Distance from Goal [m]
-angGoal = 0.0						#Angle toword Goal [deg]
-angOffset = -77.0					#Angle Offset towrd North [deg]
-gLat, gLon = 35.742532, 140.011542	#Coordinates of That time
-nLat, nLon = 0.0, 0.0		  		#Coordinates of That time
-nAng = 0.0							#Direction of That time [deg]
-relAng = [0.0, 0.0, 0.0]			#Relative Direction between Goal and Rober That time [deg]
-rAng = 0.0							#Median of relAng [deg]
-mP, mPL, mPR, mPS = 0, 0, 0, 0		#Motor Power
-kp = 0.8							#Proportional Gain
-maxMP = 60							#Maximum Motor Power
-mp_min = 20							#motor power for Low level
-mp_max = 50							#motor power fot High level
-mp_adj = 2							#adjust motor power
-
-# --- variable of Log path --- #
-phaseLog =			"/home/pi/log/phaseLog.txt"
-sleepLog = 			"/home/pi/log/sleepLog.txt"
-releaseLog = 		"/home/pi/log/releaseLog.txt"
-landingLog = 		"/home/pi/log/landingLog.txt"
-meltingLog = 		"/home/pi/log/meltingLog.txt"
-paraAvoidanceLog = 	"/home/pi/log/paraAvoidanceLog.txt"
-runningLog = 		"/home/pi/log/runningLog.txt"
-goalDetectionLog =	"/home/pi/log/goalDetectionLog.txt"
-captureLog = 		"/home/pi/log/captureLog.txt"
-calibrationLog = 	"/home/pi/log/calibrationLog"
-errorLog = 			"/home/pi/log/erroLog.txt"
-
-photopath = 		"/home/pi/photo/photo"
-photoName =			""
-bomb = 0	#flug for rotation
-H_min = 200	#Hue minimam
-H_max = 10	#Hue maximam
-S_thd = 120	#Saturation threshold
-mp_min = 10	#motor power for Low level
-mp_max = 40	#motor power fot High level
-mp_adj = -2		#adjust motor power
-mP, mPL, mPR, mPS = 0, 0, 0, 0	
-adj_add = 15
-angOffset = -77.0
-
-Gkp = 0.2
-goalFlug = -1
-goalBuf = -1
-goalArea = 0
-goalGAP = -1
-goalnowAng = 1
-goalBufAng = 1
-goalthd = 20000
-ellipseScale = 1
-goalRelativeAng = 0
-
-t_paraDete_start = 0
-timeout_calibration = 180	#time for calibration timeout
-areaSamp = 10000
-LSamp = 1.0
-GAPSamp = 140
-xSamp = 0.4
-
-e = 0
-mP = 0
-
-calibrationLog = 	"/home/pi/log/calibrationLog"
-goalDetectionLog =	"/home/pi/log/goalDetectionLog.txt"
-captureLog = 		"/home/pi/log/captureLog.txt"
 photopath = 		"/home/pi/photo/photo"
 
 if __name__ == "__main__":
 	try:
-		GPS.openGPS()
 		BMX055.bmx055_setup()
-		while goalFlug != 0 or goalBuf != 0:
-			gpsdata = GPS.readGPS()
-			goalBuf = goalFlug
-			#-----------------calibration---------------------#
-			if time.time() - t_paraDete_start > timeout_calibration:
-				fileCal = Other.fileName(calibrationLog, "txt")
-				Motor.motor(60, 0, 2)
-				Calibration.readCalData(fileCal)
-				Motor.motor(0, 0, 1)
-				ellipseScale = Calibration.Calibration(fileCal)
-				Other.saveLog(fileCal, ellipseScale)
-				t_paraDete_start = time.time()
-
-			Motor.motor(0,0,0.5)
-			Motor.motor(15,15,0.3)
-			Motor.motor(0,0,0.3)
+		while 1:
 			#-----------------get information-----------------#
+			Motor.motor(15, 15, 1.0)
+			Motor.motor(0, 0, 1.0)
 			goalFlug, goalArea, goalGAP, photoName = goal_detection.GoalDetection(photopath, H_min, H_max, S_thd, goalthd)
-			print("flug", goalFlug, "area", goalArea, "GAP", goalGAP)
-			#print("bomb",bomb)
-			goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
-			#--------------------goal---------------------#
-			if goalFlug == 0:
-				Motor.motor(40, 40 + mp_adj, 1.5)
-				Motor.motor(0, 0, 3)				
-			#------------------not detect----------------------#
-			elif goalFlug == -1:
-				if bomb == 1:
-					Motor.motor(mp_max, mp_min + mp_adj, 0.5)
-					bomb = 1
-				else:
-					Motor.motor(mp_min, mp_max + mp_adj, 0.5)	
-					bomb = 0
-			#---------------detect but no goal-------------#
-			else:
-				#-----------------target left------------------#
-				if goalArea < 10000 and goalArea > 0 and goalGAP < 0:
-					LR2G, angR2G = goal_detection.goal_detection.calR2G(goalArea, goalGAP, areaSamp, LSamp, xSamp, GAPSamp)
-					goalBufAng = RunningGPS.calNAng(ellipseScale, angOffset)
-					tbomb = time.time()
-					while time.time() - tbomb < 4:
-						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
-						goalRelativeAng = angR2G + goalBufAng - goalnowAng
-						goalRelativeAng = goalRelativeAng if goalRelativeAng <= 180 else goalRelativeAng - 360
-						goalRelativeAng = goalRelativeAng if goalRelativeAng >= -180 else goalRelativeAng + 360
-						print("goalRelativeAng",goalRelativeAng)
-						print('difang', goalnowAng - goalBufAng)
-						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
-						Motor.motor(mPL, mPR, 0.001, 1)
-						print("mPL",mPL,"mPR",mPR)
-					Motor.motor(0, 0, 0.5)
-					bomb = 1
-				#----------------------target right------------------------#
-				elif goalArea < 10000 and goalArea > 0 and goalGAP >= 0:
-					LR2G, angR2G = goal_detection.calR2G(goalArea, goalGAP, areaSamp, LSamp, xSamp, GAPSamp)
-					goalBufAng = RunningGPS.calNAng(ellipseScale, angOffset)
-					tbomb = time.time()
-					while time.time() - tbomb < 4:
-						goalnowAng = RunningGPS.calNAng(ellipseScale, angOffset)
-						goalRelativeAng = -angR2G + goalBufAng - goalnowAng
-						print("goalRelativeAng",goalRelativeAng)
-						print('difang', goalnowAng - goalBufAng)
-						mPL, mPR, mPS = RunningGPS.runMotorSpeed(goalRelativeAng, Gkp, mp_max)
-						Motor.motor(mPL, mPR, 0.001, 1)
-						print("mPL",mPL,"mPR",mPR)
-					Motor.motor(0, 0, 0.5)
-					bomb = 0
-				#-----------------near the target------------------#
-				elif goalArea >= 10000 and goalGAP < 0:
-					MP = goal_detection.curvingSwitch(goalGAP,10)
-					Motor.motor(mp_min, mp_max + MP + mp_adj, 0.3)
-					bomb = 1
-
-				elif goalArea >= 10000 and goalGAP >= 0:
-					MP = goal_detection.curvingSwitch(goalGAP,10)
-					Motor.motor(mp_max + MP, mp_min + mp_adj, 0.3)
-					bomb = 0
-				else:
-					print("error")
-				#print('MP',MP)
-			Other.saveLog(goalDetectionLog, time.time() - t_start, gpsData, goalFlug, goalArea, goalGAP, goalnowAng, photoName)
-			Other.saveLog(captureLog, time.time() - t_start, photoName)
-			"""
-			count = 0
-			ahh = 0
-			while count < 10:
-				print(goal)
-				goal = Togoal("photo", H_min, H_max, S_thd)
-				if goal ==-1:
-					count = count + 1
-			if count == 10:
-				H_min = H_min - 5
-				H_max = H_max + 5
-				count = 0
-				ahh = ahh + 1
-			if ahh == 5:
-				print("runningGPS again")
-				break
-			"""
-		Motor.motor_stop()
-		GPS.closeGPS()
+			print("flug", goalFlug, "area", goalArea, "GAP", goalGAP, "photoname", photoName)
+			#-------------------motor debug-------------------#
+			L = float(input("input left value "))
+			R = float(input("input Right value "))
+			T = float(input("input Time value "))
+			Motor.motor(L, R, T)
+			Motor.motor(0, 0, 2)
+			Motor.motor_stop()
 
 	except KeyboardInterrupt:
 		print("Emergency!")
 		Motor.motor_stop()
-		GPS.closeGPS()
 	except:
-		GPS.closeGPS()
 		Motor.motor_stop()
 		print(traceback.format_exc())
