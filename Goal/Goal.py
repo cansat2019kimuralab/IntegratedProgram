@@ -1,11 +1,8 @@
 import sys
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/Motor')
 sys.path.append('/home/pi/git/kimuralab/Detection/GoalDetection')
-import RunningGPS
 import time
-import numpy as np
 import traceback
-import Calibration
 import goal_detection
 import Motor
 
