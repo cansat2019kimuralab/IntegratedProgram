@@ -42,7 +42,7 @@ if __name__ == "__main__":
 					Motor.motor_stop()
 					f = 0
 			except KeyboardInterrupt:
-            	print("Emergency!")
+				print("Emergency!")
 				Motor.motor_stop()
 				sys.exit()
 			except:
