@@ -41,11 +41,12 @@ if __name__ == "__main__":
 					Motor.motor(0, 0, 2)
 					Motor.motor_stop()
 					f = 0
+			except KeyboardInterrupt:
+            	print("Emergency!")
+				Motor.motor_stop()
+				sys.exit()
 			except:
 				pass
-	except KeyboardInterrupt:
-		print("Emergency!")
-		Motor.motor_stop()
 	except:
 		Motor.motor_stop()
 		print(traceback.format_exc())
