@@ -20,7 +20,7 @@ dir_data = [0.0, 0.0, 0.0]
 
 def readCalData(filepath):
 	count = 0
-	while count <= 100:		
+	while count <= 100:
 		bmx055data = BMX055.bmx055_read()
 		with open(filepath, 'a')   as f:
 			for i in range(6, 8):
@@ -112,23 +112,24 @@ if __name__ == '__main__':
 		fileP = Other.fileName("calData", "txt")
 
 		print("Calibration Start")
-		Motor.motor(30, 0, 1)
+		Motor.motor(0, 30, 1)
 		while(math.fabs(roll) <= 720):
 			mPL, mPR, mPS, bmx055data = pidControl.pidSpin(targetVal, Kp, Ki, Kd, dt)
-			with open(fileP, 'a')   as f:
+			with open(fileP, 'a') as f:
 				for i in range(6, 8):
 					#print(str(bmx055data[i]) + "\t", end="")
 					f.write(str(bmx055data[i]) + "\t")
 				#print()
 				f.write("\n")
+			roll = roll + bmx055data[5] * dt
 			Motor.motor(mPL, mPR, dt, 1)
 		Motor.motor(0, 0, 1)
 		print("Calibration Finished")
 
-		cal_data = Calibration(file)
+		cal_data = Calibration(fileP)
 		for i in range(4):
 			print(cal_data[i])
-		Other.saveLog(file, cal_data)
+		Other.saveLog(fileP, cal_data)
 
 		for i in range(3):
 			dir_data[i] = readDir(cal_data, BMX055.bmx055_read())
@@ -140,7 +141,7 @@ if __name__ == '__main__':
 			dir_data[0] = readDir(cal_data, BMX055.bmx055_read())	#latest data
 			dir = np.median(dir_data)
 			print(str(dir) + "\t", end="")
-			mP = int(dir * 1.0)
+			mP = int(dir * 0.8)
 			if(mP > 30):
 				mP = 30
 			elif(mP < -30):
