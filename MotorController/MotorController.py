@@ -45,14 +45,19 @@ if __name__ == "__main__":
 	while True:
 		getch = _Getch()
 		x = getch()
-		if (x == b's'):
+		#print(x)
+		#print(type(x))
+		#if x == "e":
+			#print("OK")
+		#sys.exit()
+		if (x == 's'):
 			print("STRAIGHT")		
 			Motor.motor(30, 30, 1)
 			mpL = 30
 			mpR = 30
 			print("mpL: ", mpL, "mpR: ", mpR)
 			continue
-		if (x == b"v"):
+		if (x == "v"):
 			print('REVERSE')
 			Motor.motor(-30,- 30, 1)
 			Motor.motor(0, 0, 3)
@@ -60,30 +65,30 @@ if __name__ == "__main__":
 			mpR = 0
 			print("mpL: ", mpL, "mpR: ", mpR)
 			continue
-		if x == b'e':
+		if x == 'e':
 			print('END')
 			Motor.motor(0, 0, 5)
 			sys.exit()
 		if 0 < mpL < 60 and 0 < mpR < 60:
-			if (x == b'a'):
+			if (x == 'a'):
 				print("ACCEL")
 				Motor.motor(mpL + 1, mpR + 1, 0.01)
 				mpL = mpL + 1
 				mpR = mpR + 1
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif (x == b'r'):
+			elif (x == 'r'):
 				print("RIGHT")
 				Motor.motor(mpL + 1, mpR - 1, 0.01)
 				mpL = mpL + 1
 				mpR = mpR - 1
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif (x == b"l"):
+			elif (x == "l"):
 				print("LEFT")
 				Motor.motor(mpL - 1, mpR + 1, 0.01)
 				mpL = mpL - 1
 				mpR = mpR + 1
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif (x == b"b"):
+			elif (x == "b"):
 				print("BRAKE")
 				Motor.motor(mpL - 1, mpR - 1, 0.01)
 				mpL = mpL - 1
@@ -92,24 +97,24 @@ if __name__ == "__main__":
 			else:
 				print(x,"has no command")
 				print("Please input / a:ACCEL / b:BRAKE / s:STRAIGHT / l:LEFT / r:RIGHT /")
-				
+
 		elif mpR == 60 and mpL == 60:
-			if (x == b"a"):
+			if (x == "a"):
 				print("cannot ACCEL")
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif (x == b"b"):
+			elif (x == "b"):
 				print("BRAKE")
 				Motor.motor(mpL - 1, mpR - 1, 0.01)
 				mpL = mpL - 1
 				mpR = mpR - 1
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif (x == b"l"):
+			elif (x == "l"):
 				print("LEFT")
 				Motor.motor(mpL - 1, mpR, 0.01)
 				mpL = mpL - 1
 				mpR = mpR
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif (x == b"r"):
+			elif (x == "r"):
 				print("RIGHT")
 				Motor.motor(mpL, mpR - 1, 0.01)
 				mpL = mpL
@@ -120,22 +125,22 @@ if __name__ == "__main__":
 				print("Please input / a:ACCEL / b:BRAKE / s:STRAIGHT / l:LEFT / r:RIGHT /")
 
 		elif mpL == 0 and mpR == 0:
-			if (x == b"a"):
+			if (x == "a"):
 				print("ACCEL")
 				Motor.motor(mpL + 1, mpR + 1, 0.01)
 				mpL = mpL + 1
 				mpR = mpR + 1
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif (x == b"b"):
+			elif (x == "b"):
 				print("Already stopped")
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif (x == b"l"):
+			elif (x == "l"):
 				print("LEFT")
 				Motor.motor(mpL, mpR + 1, 0.01)
 				mpL = mpL
 				mpR = mpR + 1
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif (x == b"r"):
+			elif (x == "r"):
 				print("RIGHT")
 				Motor.motor(mpL + 1, mpR, 0.01)
 				mpL = mpL + 1
@@ -146,19 +151,19 @@ if __name__ == "__main__":
 				print("Please input / a:ACCEL / b:BRAKE / s:STRAIGHT / l:LEFT / r:RIGHT /")
 
 		elif mpL == 0 and mpR == 60:
-			if (x == b"a"):
+			if (x == "a"):
 				print("cannot ACCEL")
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif (x == b"b"):
+			elif (x == "b"):
 				print("BRAKE")
 				Motor.motor(mpL, mpR - 1, 0.01)
 				mpL = mpL
 				mpR = mpR - 1
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif (x == b"l"):
+			elif (x == "l"):
 				print("max LEFT")
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif (x == b"r"):
+			elif (x == "r"):
 				print("RIGHT")
 				Motor.motor(mpL + 1, mpR - 1, 0.01)
 				mpL = mpL + 1
@@ -169,22 +174,22 @@ if __name__ == "__main__":
 				print("Please input / a:ACCEL / b:BRAKE / s:STRAIGHT / l:LEFT / r:RIGHT /")
 
 		elif mpL == 60 and mpR == 0:
-			if (x == b"a"):
+			if (x == "a"):
 				print("cannot ACCEL")
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif (x == b"b"):
+			elif (x == "b"):
 				print("BRAKE")
 				Motor.motor(mpL- 1, mpR, 0.01)
 				mpL = mpL - 1
 				mpR = mpR
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif (x == b"l"):
+			elif (x == "l"):
 				print("LEFT")
 				Motor.motor(mpL - 1, mpR + 1, 0.01)
 				mpL = mpL - 1
 				mpR = mpR + 1
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif (x == b"r"):
+			elif (x == "r"):
 				print(" max RIGHT")
 				print("mpL: ", mpL, "mpR: ", mpR)
 			else:
@@ -192,34 +197,34 @@ if __name__ == "__main__":
 				print("Please input / a:ACCEL / b:BRAKE / s:STRAIGHT / l:LEFT / r:RIGHT /")
 
 		elif mpL == 60 or mpR == 60:
-			if (x == b"a"):
+			if (x == "a"):
 				print("cannot ACCEL")
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif (x == b"b"):
+			elif (x == "b"):
 				print("BRAKE")
 				Motor.motor(mpL - 1, mpR - 1, 0.01)
 				mpL = mpL - 1
 				mpR = mpR - 1
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif mpR == 60 and (x == b"r"):
+			elif mpR == 60 and (x == "r"):
 				print("RIGHT")
 				Motor.motor(mpL + 1, mpR - 1, 0.01)
 				mpL = mpL + 1
 				mpR = mpR - 1
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif mpR == 60 and (x == b"l"):
+			elif mpR == 60 and (x == "l"):
 				print("LEFT")
 				Motor.motor(mpL - 1, mpR, 0.01)
 				mpL = mpL - 1
 				mpR = mpR
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif mpL == 60 and (x == b"r"):
+			elif mpL == 60 and (x == "r"):
 				print("RIGHT")
 				Motor.motor(mpL, mpR - 1, 0.01)
 				mpL = mpL
 				mpR = mpR - 1
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif mpL == 60 and (x == b"l"):
+			elif mpL == 60 and (x == "l"):
 				print("LEFT")
 				Motor.motor(mpL - 1, mpR + 1, 0.01)
 				mpL = mpL - 1
@@ -229,43 +234,43 @@ if __name__ == "__main__":
 				print("Please input / a:ACCEL / b:BRAKE / s:STRAIGHT / l:LEFT / r:RIGHT /")
 
 		elif mpL == 0 or mpR == 0:
-			if (x == b"a"):
+			if (x == "a"):
 				print("ACCEL")
 				Motor.motor(mpL + 1, mpR + 1, 0.01)
 				mpL = mpL + 1
 				mpR = mpR + 1
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif mpR == 0 and (x == b"b"):
+			elif mpR == 0 and (x == "b"):
 				print("BRAKE")
 				Motor.motor(mpL - 1, mpR, 0.01)
 				mpL = mpL - 1
 				mpR = mpR
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif mpL == 0 and (x == b"b"):
+			elif mpL == 0 and (x == "b"):
 				print("BRAKE")
 				Motor.motor(mpL, mpR - 1, 0.01)
 				mpL = mpL
 				mpR = mpR - 1
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif mpR == 0 and (x == b"r"):
+			elif mpR == 0 and (x == "r"):
 				print("RIGHT")
 				Motor.motor(mpL + 1, mpR, 0.01)
 				mpL = mpL + 1
 				mpR = mpR
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif mpR == 0 and (x == b"l"):
+			elif mpR == 0 and (x == "l"):
 				print("LEFT")
 				Motor.motor(mpL - 1, mpR + 1, 0.01)
 				mpL = mpL - 1
 				mpR = mpR + 1
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif mpL == 0 and (x == b"r"):
+			elif mpL == 0 and (x == "r"):
 				print("RIGHT")
 				Motor.motor(mpL + 1, mpR - 1, 0.01)
 				mpL = mpL + 1
 				mpR = mpR - 1
 				print("mpL: ", mpL, "mpR: ", mpR)
-			elif mpL == 0 and (x == b"l"):
+			elif mpL == 0 and (x == "l"):
 				print("LEFT")
 				Motor.motor(mpL, mpR + 1, 0.01)
 				mpL = mpL
