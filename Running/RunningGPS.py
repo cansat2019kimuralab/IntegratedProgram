@@ -79,8 +79,11 @@ def runMotorSpeed(relativeAng, kp, motorPowerMax):
 	mPS = int(relativeAng * kp * (-0.9))	#Set Spin Component
 
 	#Set Left and Right Motor Power
-	mPLeft = int(motorPowerMax * (180-relativeAng)/180) + mPS
-	mPRight = int(motorPowerMax * (180-relativeAng)/180) - mPS
+	mPLeft = int(100 * (180-relativeAng)/180) + mPS
+	mPRight = int(100 * (180-relativeAng)/180) - mPS
+
+	mPLeft = mPLeft * motorPowerMax / 100
+	mPRight = MPRight * motorPowerMax / 100
 
 	#Limited motor at motorPowerMax
 	mPLeft = motorPowerMax if mPLeft > motorPowerMax else mPLeft
