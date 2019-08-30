@@ -1,6 +1,7 @@
 import sys
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/Motor')
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/BMX055')
+sys.path.append('/home/pi/git/kimuralab/IntegratedProgram/Control')
 sys.path.append('/home/pi/git/kimuralab/Other')
 import numpy as np
 import math
@@ -9,6 +10,7 @@ import time
 import BMX055
 import Motor
 import Other
+import pidControl
 from scipy.stats import norm
 from scipy import odr
 from scipy import optimize
@@ -18,7 +20,7 @@ dir_data = [0.0, 0.0, 0.0]
 
 def readCalData(filepath):
 	count = 0
-	while count <= 100:
+	while count <= 100:		
 		bmx055data = BMX055.bmx055_read()
 		with open(filepath, 'a')   as f:
 			for i in range(6, 8):
@@ -99,11 +101,30 @@ def readDir(calData, bmx055data):
 if __name__ == '__main__':
 	try:
 		BMX055.bmx055_setup()
+		targetVal = 300
+		Kp = 1.0
+		Ki = 1.1
+		Kd = 0.2
+		dt = 0.05
+		mPL, mPR, mPS = 0, 0, 0
+		roll = 0
 		time.sleep(1)
-		file = Other.fileName("calData", "txt")
+		fileP = Other.fileName("calData", "txt")
+
+		print("Calibration Start")
 		Motor.motor(30, 0, 1)
-		readCalData(file)
+		while(math.fabs(roll) <= 720):
+			mPL, mPR, mPS, bmx055data = pidControl.pidSpin(targetVal, Kp, Ki, Kd, dt)
+			with open(fileP, 'a')   as f:
+				for i in range(6, 8):
+					#print(str(bmx055data[i]) + "\t", end="")
+					f.write(str(bmx055data[i]) + "\t")
+				#print()
+				f.write("\n")
+			Motor.motor(mPL, mPR, dt, 1)
 		Motor.motor(0, 0, 1)
+		print("Calibration Finished")
+
 		cal_data = Calibration(file)
 		for i in range(4):
 			print(cal_data[i])

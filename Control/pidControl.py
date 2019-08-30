@@ -40,7 +40,7 @@ def pidSpin(targetSpin, KP, KI, KD, deltT):
 		#print(D, bmx055data[5], mPL, mPR, mPS)
 		#spin = spin + bmx055data[5] * dt
 
-		return motorPowerL, motorPowerR, motorPowerS, bmx055data[5]
+		return motorPowerL, motorPowerR, motorPowerS, bmx055data
 
 
 if __name__ == "__main__":
@@ -54,9 +54,9 @@ if __name__ == "__main__":
 		mPL, mPR, mPS = 0, 0, 0
 		roll = 0
 		while(math.fabs(roll) <= 2000):
-			mPL, mPR, mPS, spin = pidSpin(targetVal, Kp, Ki, Kd, dt)
-			roll = roll + spin * dt
-			print(spin, roll)
+			mPL, mPR, mPS, bmx055data = pidSpin(targetVal, Kp, Ki, Kd, dt)
+			roll = roll + bmx055data[5] * dt
+			print(bmx055data[5], roll)
 			Motor.motor(mPL, mPR, dt, 1)
 		Motor.motor(0, 0, 1)
 	except:
