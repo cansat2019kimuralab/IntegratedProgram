@@ -3,34 +3,62 @@ sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/Motor')
 sys.path.append('/home/pi/git/kimuralab/SensorModuleTest/BMX055')
 sys.path.append('/home/pi/git/kimuralab/Other')
 import numpy as np
-import math
-import matplotlib.pyplot as plt
 import time
+import traceback
+import math
 import BMX055
 import Motor
-import Other
-from scipy.stats import norm
-from scipy import odr
-from scipy import optimize
-#from matplotlib.patches import Ellipse
+
+spin = 0
+P, I, D = 0, 0, 0
+motorPowerL, motorPowerR, motorPowerS = 0, 0, 0
+
+def pidSpin(targetSpin, KP, KI, KD, deltT):
+		global P, I, D
+		global motorPowerL, motorPowerR, motorPowerS
+		bmx055data = BMX055.bmx055_read()
+		prebmx = bmx055data[5]
+		bmx055data = BMX055.bmx055_read()
+		P = (targetSpin - bmx055data[5]) / 20
+		I = I + P * deltT
+		D = -1 * (bmx055data[5] - prebmx) / (20 * deltT)
+
+		motorPowerS = motorPowerS + int(KP * P) + int(KI * I) + int(KD * D)
+		motorPowerS = 60 if motorPowerS > 60 else motorPowerS
+		motorPowerS = -60 if motorPowerS < -60 else motorPowerS
+
+		if motorPowerS >= 0:
+			motorPowerL, motorPowerR = 0, motorPowerS
+		elif motorPowerS < 0:
+			motorPowerL, motorPowerR = -motorPowerS, 0
+		motorPowerL = 60 if motorPowerL > 60 else motorPowerL
+		motorPowerL = -60 if motorPowerL < -60 else motorPowerL
+		motorPowerR = 60 if motorPowerR > 60 else motorPowerR
+		motorPowerR = -60 if motorPowerR < -60 else motorPowerR
+
+		#Motor.motor(mPL, mPR, dt, 1)
+		#print(D, bmx055data[5], mPL, mPR, mPS)
+		#spin = spin + bmx055data[5] * dt
+
+		return motorPowerL, motorPowerR, motorPowerS, bmx055data[5]
+
 
 if __name__ == "__main__":
-    BMX055.bmx055_setup()
-    targetVal = 300
-    kp = 1.0
-    ki = 0.0
-    kd = 0.0
-    dt = 0.05
-    mPL, mPR, mPS = 0, 0, 0
-
-    for i in range 100:
-        bmx055data = BMX055.bmx055_read()
-        P = (targetVal - bmx055data[5]) / 10
-        mPS = mPS + int(Kp * P)
-        mPS = 60 if mPS > 60 else mPS
-        if mPS >= 0
-            mPL, mPR = 0, mPS
-        elif mPS < 0
-            mPL, mPR = mPS, 0
-        Motor.motor(mPL, mPR)
-        print(mPL, mPR, mPS)
+	try:
+		BMX055.bmx055_setup()
+		targetVal = -300
+		Kp = 1.0
+		Ki = 1.1
+		Kd = 0.2
+		dt = 0.05
+		mPL, mPR, mPS = 0, 0, 0
+		roll = 0
+		while(math.fabs(roll) <= 2000):
+			mPL, mPR, mPS, spin = pidSpin(targetVal, Kp, Ki, Kd, dt)
+			roll = roll + spin * dt
+			print(spin, roll)
+			Motor.motor(mPL, mPR, dt, 1)
+		Motor.motor(0, 0, 1)
+	except:
+		Motor.motor(0, 0, 1)
+		print(traceback.format_exc())
