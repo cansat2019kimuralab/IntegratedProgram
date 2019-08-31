@@ -51,7 +51,7 @@ if __name__ == "__main__":
 		targetVal = 300
 		Kp = 1.0
 		Ki = 1.1
-		Kd = 0.0
+		Kd = 0.1
 		dt = 0.05
 		mPL, mPR, mPS = 0, 0, 0
 		roll = 0
