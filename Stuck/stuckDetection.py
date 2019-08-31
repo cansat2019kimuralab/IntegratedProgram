@@ -23,6 +23,8 @@ stuckNum = 0
 
 aveinit = 0
 stuckCount = 0
+stuckStatus = 0
+
 stuckFlug = 0
 
 def BMXstuckDetection(mP, bmxThd, measureCount, countThd, mode=0):
@@ -56,37 +58,48 @@ def BMXstuckDetection(mP, bmxThd, measureCount, countThd, mode=0):
 
 	return returnVal
 
-def stuckDetection(nLat, nLon):
+def stuckDetection(nLat = 0, nLon = 0):
 	global oLat
 	global oLon
 	global stuckNum
+	global stuckStatus
 	distance = 0.0
 	angle1, angle2 = 0.0, 0.0
-	stuckStatus = 0
 
-	'''
-	if(oLat == 0.0 and oLon == 0.0):
-		# --- Initialize nLat and nLon --- #
-		oLat = nLat
-		oLon = nLon
-	'''
-
-	if(not nLon == 0.0):
+	for i in range(10):
+		bmx055data = BMX055.bmx055_read()
+		if(math.fabs(bmx055data[0]) >= 6):
+			rollCount = rollCount + 1
+		time.sleep(0.05)
+	
+	if(rollCount >= 8):
+		#if rover has rolled over
+		if(not stuckStatus == 1):
+			stuckNum = 0
+		stuckStatus = 1
+		stuckNum = stuckNum + 1	
+	elif(not nLon == 0.0):
 		distance, angle1, angle2 = RunningGPS.calGoal(nLat, nLon, oLat, oLon, 0.0)
 		if(distance <= 5):
-			stuckStatus = 1
+			#if rover doesn't move
+			if not stuckStatus == 2:
+				stuckNum = 0
+			stuckStatus = 2
 			stuckNum = stuckNum + 1
 		else:
 			stuckStatus = 0
 			stuckNum = 0
 		oLat = nLat
 		oLon = nLon
-		print(distance)
+	print(stuckStatus, stuckNum, distance)
 	return stuckStatus, stuckNum
 
 if __name__ == "__main__":
 	try:
 		GPS.openGPS()
+		while 1:
+			stuckDetection()
+			time.sleep(1)
 		"""
 		while 1:
 			# --- Get GPS Data adn Judge Stuck --- #
@@ -107,6 +120,8 @@ if __name__ == "__main__":
 			Motor.motor(0, 0, 1)
 
 		"""
+
+		'''
 		Motor.motor(60, 60, 3)
 		Motor.motor(0, 0, 2)
 		BMX055.bmx055_setup()
@@ -122,6 +137,7 @@ if __name__ == "__main__":
 				Motor.motor(-70, 70, 3)
 				Motor.motor(0, 0, 2)
 		Motor.motor(0, 0, 1)
+		'''
 		GPS.closeGPS()
 	except KeyboardInterrupt:
 		Motor.motor(0, 0, 1)
