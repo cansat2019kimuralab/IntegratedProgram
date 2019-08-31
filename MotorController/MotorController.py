@@ -52,14 +52,14 @@ if __name__ == "__main__":
 		#sys.exit()
 		if (x == 's'):
 			print("STRAIGHT")		
-			Motor.motor(40, 40, 2)
-			mpL = 30
-			mpR = 30
+			Motor.motor(60, 60, 0.5)
+			mpL = 40
+			mpR = 40
 			print("mpL: ", mpL, "mpR: ", mpR)
 			continue
 		if (x == "v"):
 			print('REVERSE')
-			Motor.motor(-40,- 40, 2)
+			Motor.motor(-40,- 40, 0.5)
 			Motor.motor(0, 0, 3)
 			mpL = 0
 			mpR = 0
@@ -67,14 +67,14 @@ if __name__ == "__main__":
 			continue
 		if (x == 'r'):
 			print("RIGHT")
-			Motor.motor(43, 37, 2)
+			Motor.motor(63, 57, 0.5)
 			mpL = 40
 			mpR = 30
 			print("mpL: ", mpL, "mpR: ", mpR)
 			continue
 		if (x == "l"):
 			print("LEFT")
-			Motor.motor(37, 43, 2)
+			Motor.motor(57, 63, 0.5)
 			mpL = 30
 			mpR = 40
 			print("mpL: ", mpL, "mpR: ", mpR)
