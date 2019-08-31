@@ -84,7 +84,7 @@ def runMotorSpeed(relativeAng, kp, motorPowerMax):
 	mPRight = int(motorPowerMax * (180-relativeAng)/180) - mPS
 
 	mPLeft = mPLeft * motorPowerMax / 100
-	mPRight = MPRight * motorPowerMax / 100
+	mPRight = mPRight * motorPowerMax / 100
 
 	#Limited motor at motorPowerMax
 	mPLeft = motorPowerMax if mPLeft > motorPowerMax else mPLeft
