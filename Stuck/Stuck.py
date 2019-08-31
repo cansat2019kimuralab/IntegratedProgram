@@ -30,6 +30,7 @@ def stuckDetection(nLat = 0, nLon = 0):
 	global stuckStatus
 	distance = 0.0
 	angle1, angle2 = 0.0, 0.0
+	rollCount = 0
 
 	for i in range(10):
 		bmx055data = BMX055.bmx055_read()

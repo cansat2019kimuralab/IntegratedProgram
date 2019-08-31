@@ -65,19 +65,20 @@ def stuckDetection(nLat = 0, nLon = 0):
 	global stuckStatus
 	distance = 0.0
 	angle1, angle2 = 0.0, 0.0
+	rollCount = 0
 
 	for i in range(10):
 		bmx055data = BMX055.bmx055_read()
 		if(math.fabs(bmx055data[0]) >= 6):
 			rollCount = rollCount + 1
 		time.sleep(0.05)
-	
+
 	if(rollCount >= 8):
 		#if rover has rolled over
 		if(not stuckStatus == 1):
 			stuckNum = 0
 		stuckStatus = 1
-		stuckNum = stuckNum + 1	
+		stuckNum = stuckNum + 1
 	elif(not nLon == 0.0):
 		distance, angle1, angle2 = RunningGPS.calGoal(nLat, nLon, oLat, oLon, 0.0)
 		if(distance <= 5):
@@ -91,6 +92,9 @@ def stuckDetection(nLat = 0, nLon = 0):
 			stuckNum = 0
 		oLat = nLat
 		oLon = nLon
+	else:
+		stuckStatus = 0
+		stuckNum = 0
 	print(stuckStatus, stuckNum, distance)
 	return stuckStatus, stuckNum
 
