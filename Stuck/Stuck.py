@@ -58,7 +58,7 @@ def stuckDetection(nLat = 0, nLon = 0):
 		oLat = nLat
 		oLon = nLon
 	print(stuckStatus, stuckNum, distance)
-	return stuckStatus, stuckNum
+	return [stuckStatus, stuckNum]
 
 def stuckEscape(mode = 0):
 	# --- Mode --- #
