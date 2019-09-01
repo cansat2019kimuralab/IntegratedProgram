@@ -77,14 +77,16 @@ def calGoal(nowLat, nowLon, goalLat, goalLon, nowAng):
 
 def runMotorSpeed(relativeAng, kp, motorPowerMax):
 	#mPS = int(relativeAng * kp * (-0.9))	#Set Spin Component
-	mPS = int(kp * motorPower Max / (1 + 2*math.exp(0.3*(-relativeAng + 15))))
+	#relativeAng = 100 if relativeAng >= 100 else relativeAng
+	#relativeAng = -100 if relativeAng <= -100 else relativeAng
+	mPS = -1 * np.sign(relativeAng) * int(kp * motorPowerMax / (1.0 + 2.0 * math.exp(0.2 * (-math.fabs(relativeAng) + 25.0))))
 
 	#Set Left and Right Motor Power
 	mPLeft = int(motorPowerMax * (180-relativeAng)/180) + mPS
-	mPRight = int(motorPowerMax * (180-relativeAng)/180) - mPS
+	mPRight = int(motorPowerMax * (180+relativeAng)/180) - mPS
 
-	mPLeft = mPLeft * motorPowerMax / 100
-	mPRight = mPRight * motorPowerMax / 100
+	#mPLeft = mPLeft + mPS
+	#mPRight = mPRight - mPS
 
 	#Limited motor at motorPowerMax
 	mPLeft = motorPowerMax if mPLeft > motorPowerMax else mPLeft
