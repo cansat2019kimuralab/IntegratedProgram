@@ -42,11 +42,13 @@ if __name__ == "__main__":
 				print(40)
 				Motor.motor(0, 40, 0.2)
 				Motor.motor(0, 38, 0.3)
-				Motor.motor(0, 36, 0.4)
+				Motor.motor(0, 36, 0.2)
 				print(30)
-				Motor.motor(0, 32, 0.2)
-				Motor.motor(0, 30, 0.3)
-				Motor.motor(0, 28, 0.5)
+				Motor.motor(0, 33, 0.2)
+				Motor.motor(0, 31, 0.2)
+				Motor.motor(0, 20, 0.1)
+				#Motor.motor(0, 25, 0.2)
+				#Motor.motor(0, 22, 0.5)
 				
 				Motor.motor(0, 0, 3)
 				count = 40
