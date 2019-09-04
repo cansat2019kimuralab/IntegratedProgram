@@ -21,7 +21,7 @@ def Calibration(path):
 		y_csv = []
 		for line in lines:
 			word = line.split()
-			if(abs(float(word[0])) < 500 and abs(float(word[1])) < 500): 
+			if(math.fabs(float(word[0])) < 200 and math.fabs(float(word[1])) < 250): 
 				x_csv.append(float(word[0]))
 				y_csv.append(float(word[1]))
 
@@ -80,7 +80,7 @@ def Calibration(path):
 
 if __name__ == '__main__':
 	try:
-		file = 'calibrationLog19.txt'
+		file = 'calibrationLog0007.txt'
 		cal_data = Calibration(file)
 		print(cal_data)
 	except KeyboardInterrupt:

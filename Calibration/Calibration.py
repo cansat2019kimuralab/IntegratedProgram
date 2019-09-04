@@ -42,7 +42,7 @@ def Calibration(path):
 		y_csv = []
 		for line in lines:
 			word = line.split()
-			if(abs(float(word[0])) < 500 and abs(float(word[1])) < 500): 
+			if(abs(float(word[0])) < 200 and abs(float(word[1])) < 250): 
 				x_csv.append(float(word[0]))
 				y_csv.append(float(word[1]))
 
