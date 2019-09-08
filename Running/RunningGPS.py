@@ -83,7 +83,7 @@ def runMotorSpeed(relativeAng, kP, motorPowerMax):
 	mPRight = int(motorPowerMax * (180+relativeAng)/180) - mPS
 	"""
 
-	mPS = int(relativeAng * kP)
+	mPS = int(relativeAng * kP * (-1))
 	mPLeft = motorPowerMax + mPS
 	mPRight = motorPowerMax - mPS
 	#mPLeft = mPLeft + mPS

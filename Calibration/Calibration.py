@@ -141,7 +141,7 @@ if __name__ == '__main__':
 	try:
 		BMX055.bmx055_setup()
 		targetVal = 300
-		Kp = 1.0
+		Kp = 0.9
 		Ki = 1.1
 		Kd = 0.2
 		dt = 0.05
@@ -179,14 +179,13 @@ if __name__ == '__main__':
 			dir_data[1] = dir_data[0]		#Second latest data
 			dir_data[0] = readDir(cal_data, BMX055.bmx055_read())	#latest data
 			dir = np.median(dir_data)
-			print(str(dir) + "\t", end="")
-			mP = int(dir * 0.8)
+			mP = int(dir * 0.6)
 			if(mP > 30):
 				mP = 30
 			elif(mP < -30):
 				mP = -30
 			Motor.motor(mP, -mP, 0.001, 1)
-			print(mP)
+			print(dir, mP)
 	except KeyboardInterrupt:
 		Motor.motor(0, 0, 1)
 		Motor.motor_stop()
