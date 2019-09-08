@@ -76,24 +76,24 @@ def calGoal(nowLat, nowLon, goalLat, goalLon, nowAng):
 	return [distanceGoal, angleGoal, relativeAng]
 
 def runMotorSpeed(relativeAng, kP, motorPowerMax):
-	#mPS = int(motorPowerMax * relativeAng * kP * (-0.6) / 180.0)	#Set Spin Component
-	#relativeAng = 100 if relativeAng >= 100 else relativeAng
-	#relativeAng = -100 if relativeAng <= -100 else relativeAng
-	#mPS = -1 * np.sign(relativeAng) * int(kP * motorPowerMax / (1.0 + 2.0 * math.exp(0.2 * (-math.fabs(relativeAng) + 35.0))))
-	mPS = int(relativeAng * kP * (-0.6))
-
+	"""
 	#Set Left and Right Motor Power
+	mPS = int(relativeAng * kP * (-0.6))
 	mPLeft = int(motorPowerMax * (180-relativeAng)/180) + mPS
 	mPRight = int(motorPowerMax * (180+relativeAng)/180) - mPS
+	"""
 
+	mPS = int(relativeAng * kP)
+	mPLeft = motorPowerMax + mPS
+	mPRight = motorPowerMax - mPS
 	#mPLeft = mPLeft + mPS
 	#mPRight = mPRight - mPS
 
 	#Limited motor at motorPowerMax
-	mPLeft = motorPowerMax if mPLeft > motorPowerMax else mPLeft
-	mPLeft = motorPowerMax / 2 if mPLeft < motorPowerMax / 2 else mPLeft
-	mPRight = motorPowerMax if mPRight > motorPowerMax else mPRight
-	mPRight = motorPowerMax / 2 if mPRight < motorPowerMax / 2 else mPRight
+	mPLeft = int(motorPowerMax if mPLeft > motorPowerMax else mPLeft)
+	mPLeft = int(motorPowerMax / 2 if mPLeft < motorPowerMax / 2 else mPLeft)
+	mPRight = int(motorPowerMax if mPRight > motorPowerMax else mPRight)
+	mPRight = int(motorPowerMax / 2 if mPRight < motorPowerMax / 2 else mPRight)
 	return [mPLeft, mPRight, mPS]
 
 if __name__ == "__main__":
