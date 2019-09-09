@@ -67,8 +67,8 @@ def Calibration(path):
 	y_csv = []
 	for i in range(len(xx_csv)):
 		r = math.sqrt((xx_csv[i] - x_ave)**2 + (yy_csv[i] - y_ave)**2)
-		#print(r)
-		if(r <= 140 and r >= 30):
+		if(r <= 140 and r >= 50):
+			print(r)
 			x_csv.append(xx_csv[i])
 			y_csv.append(yy_csv[i])
 
@@ -120,7 +120,7 @@ def Calibration(path):
 
 if __name__ == '__main__':
 	try:
-		file = 'calData0000.txt'
+		file = 'calibrationLog0008.txt'
 		cal_data = Calibration(file)
 		print(cal_data)
 	except KeyboardInterrupt:

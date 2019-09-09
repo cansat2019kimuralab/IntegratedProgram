@@ -92,7 +92,7 @@ def Calibration(path):
 	for i in range(len(xx_csv)):
 		r = math.sqrt((xx_csv[i] - x_ave)**2 + (yy_csv[i] - y_ave)**2)
 		#print(r)
-		if(r <= 140):
+		if(r <= 140 and r >= 30):
 			x_csv.append(xx_csv[i])
 			y_csv.append(yy_csv[i])
 	xx_csv = x_csv
