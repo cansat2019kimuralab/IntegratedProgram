@@ -48,7 +48,7 @@ def pidSpin(targetSpin, KP, KI, KD, deltT):
 if __name__ == "__main__":
 	try:
 		BMX055.bmx055_setup()
-		targetVal = 300
+		targetVal = 200
 		Kp = 1.0
 		Ki = 1.1
 		Kd = 0.1
