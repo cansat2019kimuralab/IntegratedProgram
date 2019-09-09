@@ -36,7 +36,6 @@ def ellipse(B, x):
 	return ((x[0]/B[0])**2+(x[1]/B[1])**2-1.)
 
 def Calibration(path):
-	# - Read Data from Log - #
 	with open(path, "r") as f:
 		lines = f.readlines()
 		x_csv = []
@@ -48,7 +47,6 @@ def Calibration(path):
 				x_csv.append(float(word[0]))
 				y_csv.append(float(word[1]))
 
-	# - First Analysis - #
 	xx_csv = x_csv
 	yy_csv = y_csv
 	n = len(x_csv)
@@ -86,15 +84,17 @@ def Calibration(path):
 
 	cal_data = [x_ave, y_ave, 70.*myoutput.beta[1], 70.*myoutput.beta[0]]
 
-	# - Second Analysis - #
 	x_csv = []
 	y_csv = []
 	for i in range(len(xx_csv)):
 		r = math.sqrt((xx_csv[i] - x_ave)**2 + (yy_csv[i] - y_ave)**2)
-		#print(r)
-		if(r <= 140 and r >= 30):
+		if(r <= 140 and r >= 50):
+			print(r)
 			x_csv.append(xx_csv[i])
 			y_csv.append(yy_csv[i])
+
+	#print(x_csv)
+	#print(y_csv)
 	xx_csv = x_csv
 	yy_csv = y_csv
 	n = len(x_csv)
@@ -127,8 +127,8 @@ def Calibration(path):
 	myodr = odr.ODR(mydata, mdr, beta0=[1.,2.])
 	myoutput = myodr.run()
 
-	x_csv = x_csv * 7000 /  myoutput.beta[1]
-	y_csv = y_csv * 7000 /  myoutput.beta[0]
+	x_csv = x_csv / 70 * myoutput.beta[1]
+	y_csv = y_csv / 70 * myoutput.beta[0]
 
 	cal_data = [x_ave, y_ave, myoutput.beta[1] / 100, myoutput.beta[0] / 100]
 	return cal_data
