@@ -120,7 +120,7 @@ def Calibration(path):
 
 if __name__ == '__main__':
 	try:
-		file = 'calibrationLog0008.txt'
+		file = 'calibrationLog0003.txt'
 		cal_data = Calibration(file)
 		print(cal_data)
 	except KeyboardInterrupt:

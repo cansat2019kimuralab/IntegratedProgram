@@ -127,10 +127,10 @@ def Calibration(path):
 	myodr = odr.ODR(mydata, mdr, beta0=[1.,2.])
 	myoutput = myodr.run()
 
-	x_csv = x_csv / 70 * myoutput.beta[1]
-	y_csv = y_csv / 70 * myoutput.beta[0]
+	x_csv = x_csv * 7000 /  myoutput.beta[1]
+	y_csv = y_csv * 7000 /  myoutput.beta[0]
 
-	cal_data = [x_ave, y_ave, 70.*myoutput.beta[1], 70.*myoutput.beta[0]]
+	cal_data = [x_ave, y_ave, myoutput.beta[1] / 100, myoutput.beta[0] / 100]
 	return cal_data
 
 def readDir(calData, bmx055data):
