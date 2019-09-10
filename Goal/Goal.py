@@ -9,9 +9,9 @@ import Motor
 goalArea = 0		#variable for goal area
 goalGAP = -1		#variable for goal gap
 goalthd = 7000		#variable for goal area thd
-H_min = 220			#Hue minimam
-H_max = 5			#Hue maximam
-S_thd = 180			#Saturation threshold
+H_min = 20			#Hue minimam
+H_max = 20			#Hue maximam
+S_thd = 80			#Saturation threshold
 
 
 photopath = 		"/home/pi/photo/photo"
